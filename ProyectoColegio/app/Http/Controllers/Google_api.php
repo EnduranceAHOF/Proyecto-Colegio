@@ -20,7 +20,7 @@ class Google_api extends Controller {
     }
     public function login() {
         $scope='https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile';
-        $redirect_uri = getenv("APP_URL").'/incio';
+        $redirect_uri = "http://".getenv("APP_URL").'/g-response';
         $auth_url  = "https://accounts.google.com/o/oauth2/v2/auth";
 	$auth_url .= "?";
 	$auth_url .= "scope=$scope&";
@@ -42,7 +42,7 @@ class Google_api extends Controller {
             'code' => $code,
             'client_id' => getenv("GOOGLE_OAUTH_PUBLIC"),
             'client_secret' => getenv("GOOGLE_OAUTH_SECRET"),
-            'redirect_uri' => 'https://cloupping.com/g-response',
+            'redirect_uri' => "http://".getenv("APP_URL").'/g-response',
             'grant_type' => 'authorization_code',
         );
         curl_setopt($curl, CURLOPT_POST, true);
@@ -68,6 +68,9 @@ class Google_api extends Controller {
             }
         }
         $token = $result;
+        if (isset($token['error'])){
+            return dd($token);
+        }
         $access_token = $token['access_token'];
         $url = "https://www.googleapis.com/oauth2/v2/userinfo?fields=name,email,gender,id,picture,verified_email";
         // Init, execute, close curl
@@ -88,6 +91,11 @@ class Google_api extends Controller {
         $google_img = $returned_items['picture'];
         session::put(['account' => $returned_items]);
         dd($returned_items);
+        file_get_contents("https://cloupping.com/api-ins/login");
+        //POST e-mail PUBLIC KEY
+        //RETURN:
+        //Institution []
+        //Staff data
     }
 
     public function auth_user(Request $request) {
