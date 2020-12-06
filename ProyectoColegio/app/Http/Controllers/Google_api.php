@@ -91,11 +91,19 @@ class Google_api extends Controller {
         $google_img = $returned_items['picture'];
         session::put(['account' => $returned_items]);
         dd($returned_items);
-        file_get_contents("https://cloupping.com/api-ins/login");
-        //POST e-mail PUBLIC KEY
+        file_get_contents("https://cloupping.com/api-ins");
+        //POST
+//     {
+//          "institution" : "Institución Prueba",
+//          "public_key" : "sPz3JRcnv4WT8yu7XKUTj9ksOKcrdZbq",
+//          "method" : "auth",
+//          "data" : {
+//            "email" : "fernando.dc.spam@gmail.com"
+//          }
+//      }
+        
         //RETURN:
-        //Institution []
-        //Staff data
+        //json
     }
 
     public function auth_user(Request $request) {
