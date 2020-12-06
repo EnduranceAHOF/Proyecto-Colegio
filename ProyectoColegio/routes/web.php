@@ -16,6 +16,4 @@ use App\Http\Controllers\Google_api;
 
 Route::get('/asd', [Google_api::class, 'login']);
 
-Route::get('/test', function(){
-   return "hola"; 
-});
+Route::get('/g-response',[Google_api::class, 'user_data']);

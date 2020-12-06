@@ -83,15 +83,11 @@ class Google_api extends Controller {
 
         // Get lists
         $google_id = $returned_items['id'];
-        $result = DB::select("SELECT * FROM accounts WHERE google_id = ?",[$google_id]);
-        if(count($result)==0){
-            $google_email = $returned_items['email'];
-            $google_name = $returned_items['name'];
-            $google_img = $returned_items['picture'];
-            DB::insert("INSERT INTO accounts(google_id, google_email, google_name, google_url_image) VALUES (?,?,?,?)",["$google_id","$google_email","$google_name","$google_img"]);
-        }
+        $google_email = $returned_items['email'];
+        $google_name = $returned_items['name'];
+        $google_img = $returned_items['picture'];
         session::put(['account' => $returned_items]);
-        return redirect('/');
+        dd($returned_items);
     }
 
     public function auth_user(Request $request) {
