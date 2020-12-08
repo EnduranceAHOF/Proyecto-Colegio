@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller\Api_Google;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
 
@@ -90,25 +91,42 @@ class Google_api extends Controller {
         $google_name = $returned_items['name'];
         $google_img = $returned_items['picture'];
         session::put(['account' => $returned_items]);
-        dd($returned_items);
+        //dd($returned_items);
         file_get_contents("https://cloupping.com/api-ins");
         //POST
-//     {
-//          "institution" : "Institución Prueba",
-//          "public_key" : "sPz3JRcnv4WT8yu7XKUTj9ksOKcrdZbq",
-//          "method" : "auth",
-//          "data" : {
-//            "email" : "fernando.dc.spam@gmail.com"
-//          }
-//      }
-        
-        //RETURN:
+        // $response= Http::post('https://cloupping.com/api-ins',[
+            
+        //         'institution' => 'Institución Prueba',
+        //         'public_key' => 'sPz3JRcnv4WT8yu7XKUTj9ksOKcrdZbq',
+        //         'method' => 'auth',
+        //         'data' => [
+        //             'email'=>$google_email
+        //         ]
+        // ]);
+
+        //RETURN: 
         //json
+        $arr= array(
+            'institution' => 'Institución Prueba',
+            'public_key' => getenv("APP_PUBLIC_KEY"),
+            'method' => 'auth',
+            'data' => ['email' => $google_email]);
+            
+        $response = Http::withBody(json_encode($arr),'application/json')->post("https://cloupping.com/api-ins");
+        session::put(['account' => $response->body()]);
+        
+        if($response==null || $response==""){
+            return false;
+        }
+        else{
+
+            return redirect('home');
+        }
+        //dd($response->body());
     }
 
-    public function auth_user(Request $request) {
+    public function auth_user(Request $request){
         $data = $request->all();
         return var_dump($data);
-    }
-
+    }                   
 }
