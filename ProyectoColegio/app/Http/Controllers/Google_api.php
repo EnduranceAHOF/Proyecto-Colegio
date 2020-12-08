@@ -9,7 +9,8 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
 
 class Google_api extends Controller {
-    public function googlelogin(){
+
+    public function googlelogin() {
         $gClient = new \Google_Client();
         $gClient->setClientId(getenv("GOOGLE_OAUTH_PUBLIC"));
         $gClient->setClientSecret(getenv("GOOGLE_OAUTH_SECRET"));
@@ -19,17 +20,22 @@ class Google_api extends Controller {
         $url = $gClient->createAuthUrl();
         header("Location: $url");
     }
+
     public function login() {
-        $scope='https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile';
-        $redirect_uri = "http://".getenv("APP_URL").'/g-response';
-        $auth_url  = "https://accounts.google.com/o/oauth2/v2/auth";
-	$auth_url .= "?";
-	$auth_url .= "scope=$scope&";
-	//$auth_url .= "state=$state&";
-	$auth_url .= "redirect_uri=$redirect_uri&";
-	$auth_url .= "response_type=code&";
-	$auth_url .= "client_id=".getenv("GOOGLE_OAUTH_PUBLIC");
-        return redirect($auth_url);
+        if (Session::has('account')) {
+            return redirect('home');
+        } else {
+            $scope = 'https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile';
+            $redirect_uri = "http://" . getenv("APP_URL") . '/g-response';
+            $auth_url = "https://accounts.google.com/o/oauth2/v2/auth";
+            $auth_url .= "?";
+            $auth_url .= "scope=$scope&";
+            //$auth_url .= "state=$state&";
+            $auth_url .= "redirect_uri=$redirect_uri&";
+            $auth_url .= "response_type=code&";
+            $auth_url .= "client_id=" . getenv("GOOGLE_OAUTH_PUBLIC");
+            return redirect($auth_url);
+        }
     }
 
     public function user_data(Request $request) {
@@ -43,7 +49,7 @@ class Google_api extends Controller {
             'code' => $code,
             'client_id' => getenv("GOOGLE_OAUTH_PUBLIC"),
             'client_secret' => getenv("GOOGLE_OAUTH_SECRET"),
-            'redirect_uri' => "http://".getenv("APP_URL").'/g-response',
+            'redirect_uri' => "http://" . getenv("APP_URL") . '/g-response',
             'grant_type' => 'authorization_code',
         );
         curl_setopt($curl, CURLOPT_POST, true);
@@ -69,7 +75,7 @@ class Google_api extends Controller {
             }
         }
         $token = $result;
-        if (isset($token['error'])){
+        if (isset($token['error'])) {
             return dd($token);
         }
         $access_token = $token['access_token'];
@@ -90,43 +96,26 @@ class Google_api extends Controller {
         $google_email = $returned_items['email'];
         $google_name = $returned_items['name'];
         $google_img = $returned_items['picture'];
-        session::put(['account' => $returned_items]);
-        //dd($returned_items);
-        file_get_contents("https://cloupping.com/api-ins");
-        //POST
-        // $response= Http::post('https://cloupping.com/api-ins',[
-            
-        //         'institution' => 'Institución Prueba',
-        //         'public_key' => 'sPz3JRcnv4WT8yu7XKUTj9ksOKcrdZbq',
-        //         'method' => 'auth',
-        //         'data' => [
-        //             'email'=>$google_email
-        //         ]
-        // ]);
-
-        //RETURN: 
-        //json
-        $arr= array(
+        $arr = array(
             'institution' => 'Institución Prueba',
             'public_key' => getenv("APP_PUBLIC_KEY"),
             'method' => 'auth',
             'data' => ['email' => $google_email]);
-            
-        $response = Http::withBody(json_encode($arr),'application/json')->post("https://cloupping.com/api-ins");
-        session::put(['account' => $response->body()]);
-        
-        if($response==null || $response==""){
-            return false;
-        }
-        else{
 
+        $response = Http::withBody(json_encode($arr), 'application/json')->post("https://cloupping.com/api-ins");
+        $data = json_decode($response->body(), true);
+        session::put(['account' => $data]);
+        if ($data == null || $data == "") {
+            dd($data);
+        } else {
             return redirect('home');
         }
         //dd($response->body());
     }
 
-    public function auth_user(Request $request){
+    public function auth_user(Request $request) {
         $data = $request->all();
         return var_dump($data);
-    }                   
+    }
+
 }
