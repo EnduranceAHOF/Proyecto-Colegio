@@ -3,7 +3,7 @@
 
 @extends("layouts.mcdn")
 @section("title")
-Inicio
+Administrar Estudiantes
 @endsection
 
 @section("headex")
@@ -11,5 +11,5 @@ Inicio
 @endsection
 
 @section("context")
-
+    ksdjfdakujsdnbkajndbaskjsdnbaj
 @endsection

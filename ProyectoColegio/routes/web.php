@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Google_api;
 use App\Http\Controllers\App_Controller;
+use App\Http\Controllers\View_System;
 
 /*
 |--------------------------------------------------------------------------
@@ -17,12 +18,7 @@ use App\Http\Controllers\App_Controller;
 
 
 Route::get('/', [Google_api::class, 'login']);
+// Route::get('/admin', [App_Controller::class], 'admin');
 Route::get('/logout', [App_Controller::class, 'logout']);
 Route::get('/g-response',[Google_api::class, 'user_data']);
-Route::get('/home', function(){
-    if (Session::has('account')){
-        return view('home');
-    }else{
-        return redirect('');
-    }
-});
+Route::get('/{param}',[View_System::class, 'main']);

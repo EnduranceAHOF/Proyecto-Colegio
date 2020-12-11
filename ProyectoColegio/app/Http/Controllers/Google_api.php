@@ -104,13 +104,14 @@ class Google_api extends Controller {
 
         $response = Http::withBody(json_encode($arr), 'application/json')->post("https://cloupping.com/api-ins");
         $data = json_decode($response->body(), true);
+        $data["url_img"] = $google_img;
         session::put(['account' => $data]);
         if ($data == null || $data == "") {
             dd($data);
-        } else {
+            // F en el chat
+        } else { 
             return redirect('home');
         }
-        //dd($response->body());
     }
 
     public function auth_user(Request $request) {

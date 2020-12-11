@@ -37,9 +37,9 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.basictable/1.0.9/jquery.basictable.js" integrity="sha512-nWpIKXCKNcC4VHVCWrWEUdaolGZTe84yIp10hGHjME3g9gBlhJzpPNRKWHUTilZ3zbcPQptz20DDNb+W4aXuWA==" crossorigin="anonymous"></script>
         @yield("headex")
     </head>
-    <body>
-        <nav class="navbar navbar-expand-lg navbar-light bg-light">
-            <a class="navbar-brand" href="#">Saint Charles</a>
+    <body style="background-color: white">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+            <a class="navbar-brand" href="#">{{ getenv("APP_NAME") }}</a>
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
@@ -47,40 +47,37 @@
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav mr-auto">
                     <li class="nav-item active">
-                        <a class="nav-link" href="#">Inicio <span class="sr-only">(current)</span></a>
+                        <a class="nav-link" href="home">Inicio</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="#">
 
                         </a>
                     </li>
+                    @if(Session::get('account')["is_admin"]=="YES")
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            Dropdown
+                            Administrar
                         </a>
                         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                            <a class="dropdown-item" href="#">Action</a>
-                            <a class="dropdown-item" href="#">Another action</a>
-                            <div class="dropdown-divider"></div>
-                            <a class="dropdown-item" href="#">Something else here</a>
+                            <a class="dropdown-item" href="adm_periods">Periodos</a>
+                            <a class="dropdown-item" href="adm_users">Usuarios</a>
+                            <a class="dropdown-item" href="adm_courses">Cursos</a>
+                            <a class="dropdown-item" href="adm_students">Estudiantes</a>
                         </div>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a>
-                    </li>
-                </ul>
-                <form action="/logout" class="form-inline my-2 my-lg-0">
-                    @if(Session::has('account'))
-                    <!--TODO-->
-                    {{Session::get('account')["full_name"]}}
-                    @else
-                    
                     @endif
-                    <button class="btn btn-outline-danger">Logout</button>
+                </ul>
+                <!-- -->
+                <a class="btn btn-light mr-2" >    <!--nombre foto perfil -->
+                    <img class="rounded-circle" src="{{ Session::get('account')["url_img"]}}" rel="Profile" height="22px" style="margin-top: -6px;margin-left: -4px;margin-right: 2px;">
+                    {{ Session::get('account')["full_name"]}}
+                </a> 
+                <form action="/logout" class="form-inline my-2 my-lg-0">
+                    <button class="btn btn-outline-light">Salir <i class="fas fa-power-off"></i></button>
                 </form>
             </div>
         </nav>
-
         <div>
         </div>
         @yield("context")

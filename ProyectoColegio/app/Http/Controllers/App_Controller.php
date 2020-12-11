@@ -10,9 +10,9 @@ use Illuminate\Support\Facades\Session;
 
 class App_Controller extends Controller {
 
-
+    
     public function logout() {
-        session::forget('account');
+        Session::forget('account');
         return redirect('');
     }
 
