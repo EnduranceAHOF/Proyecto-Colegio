@@ -10,17 +10,6 @@ use Illuminate\Support\Facades\Session;
 
 class Google_api extends Controller {
 
-    public function googlelogin() {
-        $gClient = new \Google_Client();
-        $gClient->setClientId(getenv("GOOGLE_OAUTH_PUBLIC"));
-        $gClient->setClientSecret(getenv("GOOGLE_OAUTH_SECRET"));
-        $gClient->setApplicationName(getenv("GOOGLE_OAUTH_NAME"));
-        $gClient->setRedirectUri("https://cloupping.com/g-response");
-        $gClient->setScopes("https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile");
-        $url = $gClient->createAuthUrl();
-        header("Location: $url");
-    }
-
     public function login() {
         if (Session::has('account')) {
             return redirect('home');
