@@ -19,6 +19,8 @@ use App\Http\Controllers\View_System;
 
 Route::get('/', [Google_api::class, 'login']);
 // Route::get('/admin', [App_Controller::class], 'admin');
+Route::get('/change_period', [App_Controller::class, 'change_period']);
+Route::get('/add_new_period', [App_Controller::class, 'add_new_period']);
 Route::get('/logout', [App_Controller::class, 'logout']);
 Route::get('/g-response',[Google_api::class, 'user_data']);
 Route::get('/{param}',[View_System::class, 'main']);

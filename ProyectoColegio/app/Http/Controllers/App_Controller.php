@@ -9,11 +9,49 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
 
 class App_Controller extends Controller {
-
-    
     public function logout() {
         Session::forget('account');
         return redirect('');
     }
-
+    public function change_period(Request $request){
+        if(Session::get('account')['is_admin']=='YES'){
+            $gets = $request->input();
+            $arr = array(
+                'institution' => getenv("APP_NAME"),
+                'public_key' => getenv("APP_PUBLIC_KEY"),
+                'method' => 'change_period',
+                'data' => ['period' => $gets["year"]]);
+            $response = Http::withBody(json_encode($arr), 'application/json')->post("https://cloupping.com/api-ins");
+            $data = json_decode($response->body(), true);
+            return back();
+        }
+        else{
+            return redirect('/');
+        }
+    }
+    public function add_new_period(Request $request){
+        if(Session::get('account')['is_admin']=='YES'){
+            $gets = $request->input();
+            $arr = array(
+                'institution' => getenv("APP_NAME"),
+                'public_key' => getenv("APP_PUBLIC_KEY"),
+                'method' => 'add_period',
+                'data' => ['period' => $gets["year"]]);
+            $response = Http::withBody(json_encode($arr), 'application/json')->post("https://cloupping.com/api-ins");
+            if($response->status() == 400){
+                return redirect('adm_periods')->with('message', 'Este periodo ya existe!');
+            }
+            $data = json_decode($response->body(), true);
+            return back();
+        }
+        else{
+            return redirect('/');
+        }
+    }
+    public function add_staff(){
+        //add student
+    }
+    public function del_student(){
+        //del student
+    }
 }

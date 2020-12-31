@@ -10,7 +10,14 @@ use Illuminate\Support\Facades\Session;
 
 class View_System extends Controller {
     public function main(request $request) {
+        
         $path = $request->path();
+        $gets = $request->input();
+        //dd($gets);
+        $message = null;
+        if(session::has('message')){
+            $message = session::get('message');
+        }
         if($this->valSession()){
             switch ($path) {
                 case "home":
@@ -19,13 +26,14 @@ class View_System extends Controller {
                 case "adm_periods":
                     if($this->isAdmin()){
                         $periodo = $this->periods();
-                        return view('adm_periods')->with("periods",$periodo);
+                        return view('adm_periods')->with("periods",$periodo)->with("message",$message);
                     }else{
                         return redirect('');
                     }
                 case "adm_users":
                     if($this->isAdmin()){
-                        return view('adm_users');
+                        $staff = $this->staff();
+                        return view('adm_users')->with("staff",$staff);
                     }else{
                         return redirect('');
                     }
@@ -47,13 +55,12 @@ class View_System extends Controller {
         }else{
             return redirect('');
         }
-        
-        
     }
     private function valSession(){
         if (Session::has('account')){
             return true;
         }else{
+
             return false;
         }
     }
@@ -67,13 +74,24 @@ class View_System extends Controller {
     }
     private function periods(){
         $arr = array(
-            'institution' => 'Institución Prueba',
+            'institution' => getenv("APP_NAME"),
             'public_key' => getenv("APP_PUBLIC_KEY"),
             'method' => 'list_periods'
         );
         $response = Http::withBody(json_encode($arr), 'application/json')->post("https://cloupping.com/api-ins");
         $data = json_decode($response->body(), true);
-        return $data;
-        
+        return $data;       
     }
+    private function staff(){
+        $arr = array(
+            'institution' => getenv("APP_NAME"),
+            'public_key' => getenv("APP_PUBLIC_KEY"),
+            'method' => 'list_staff'
+        );
+        $response = Http::withBody(json_encode($arr), 'application/json')->post("https://cloupping.com/api-ins");
+        $data = json_decode($response->body(), true);
+        return $data;       
+    }
+    
 }
+

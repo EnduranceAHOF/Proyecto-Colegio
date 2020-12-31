@@ -41,6 +41,7 @@ class Google_api extends Controller {
             'redirect_uri' => "http://" . getenv("APP_URL") . '/g-response',
             'grant_type' => 'authorization_code',
         );
+
         curl_setopt($curl, CURLOPT_POST, true);
         curl_setopt($curl, CURLOPT_POSTFIELDS, $auth_data);
         curl_setopt($curl, CURLOPT_URL, 'https://accounts.google.com/o/oauth2/token');
@@ -52,6 +53,7 @@ class Google_api extends Controller {
         }
         curl_close($curl);
         $result = json_decode($result, true);
+        
         if (isset($result['error'])) {
             if (isset($_SERVER['HTTP_COOKIE'])) {
                 $cookies = explode(';', $_SERVER['HTTP_COOKIE']);
@@ -69,36 +71,39 @@ class Google_api extends Controller {
         }
         $access_token = $token['access_token'];
         $url = "https://www.googleapis.com/oauth2/v2/userinfo?fields=name,email,gender,id,picture,verified_email";
+        
         // Init, execute, close curl
         $ch = curl_init();
+        //dd($ch);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_HTTPHEADER, array('Authorization: Bearer ' . $access_token));
         $r = curl_exec($ch);
         curl_close($ch);
-
+        //dd($r);
         //Decode json
         $returned_items = json_decode($r, true);
-
+        //dd($returned_items);
         // Get lists
         $google_id = $returned_items['id'];
         $google_email = $returned_items['email'];
         $google_name = $returned_items['name'];
         $google_img = $returned_items['picture'];
         $arr = array(
-            'institution' => 'Institución Prueba',
+            'institution' => getenv("APP_NAME"),
             'public_key' => getenv("APP_PUBLIC_KEY"),
             'method' => 'auth',
             'data' => ['email' => $google_email]);
-
+        //dd($arr);
         $response = Http::withBody(json_encode($arr), 'application/json')->post("https://cloupping.com/api-ins");
+        //dd($response);
         $data = json_decode($response->body(), true);
-        $data["url_img"] = $google_img;
-        session::put(['account' => $data]);
+        //dd($data);
         if ($data == null || $data == "") {
-            dd($data);
-            // F en el chat
-        } else { 
+            return view('error_400')->with("text",'Correo Inválido.');
+        } else {
+            $data["url_img"] = $google_img; 
+            session::put(['account' => $data]);
             return redirect('home');
         }
     }
