@@ -53,22 +53,31 @@ class View_System extends Controller {
                 return view('not_found')->with("path",$path);
             }
         }else{
-            return redirect('');
+            return redirect('/logout');
         }
     }
     private function valSession(){
         if (Session::has('account')){
-            return true;
+            $arr = array(
+                'institution' => getenv("APP_NAME"),
+                'public_key' => getenv("APP_PUBLIC_KEY"),
+                'method' => 'val_session_staff',
+                'data' => ['dni' => Session::get('account')['dni']]);
+            $response = Http::withBody(json_encode($arr), 'application/json')->post("https://cloupping.com/api-ins");
+            $status = $response->json()['status'];
+            if($status == false){
+                return false;
+            }else{
+                return true;
+            }
         }else{
-
             return false;
-        }
+        }      
     }
     private function isAdmin(){
         if(Session::get('account')['is_admin']=='YES'){
             return true;
-        }
-        else{
+        }else{
             return false;
         }
     }
@@ -92,6 +101,5 @@ class View_System extends Controller {
         $data = json_decode($response->body(), true);
         return $data;       
     }
-    
 }
 

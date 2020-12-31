@@ -19,7 +19,6 @@ class Google_api extends Controller {
             $auth_url = "https://accounts.google.com/o/oauth2/v2/auth";
             $auth_url .= "?";
             $auth_url .= "scope=$scope&";
-            //$auth_url .= "state=$state&";
             $auth_url .= "redirect_uri=$redirect_uri&";
             $auth_url .= "response_type=code&";
             $auth_url .= "client_id=" . getenv("GOOGLE_OAUTH_PUBLIC");
@@ -100,8 +99,11 @@ class Google_api extends Controller {
         $data = json_decode($response->body(), true);
         //dd($data);
         if ($data == null || $data == "") {
+            $data["token"] = $access_token;
+            session::put(['account' => $data]);
             return view('error_400')->with("text",'Correo Inválido.');
         } else {
+            $data["token"] = $access_token;
             $data["url_img"] = $google_img; 
             session::put(['account' => $data]);
             return redirect('home');

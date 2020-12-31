@@ -10,8 +10,13 @@ use Illuminate\Support\Facades\Session;
 
 class App_Controller extends Controller {
     public function logout() {
-        Session::forget('account');
-        return redirect('');
+        //if(Session::has('account')){
+            $token = Session::get('account')['token'];
+            $response = Http::get("https://accounts.google.com/o/oauth2/revoke?token=$token");
+            Session::forget('account');
+            sleep(1);
+            return redirect('/');
+        //}
     }
     public function change_period(Request $request){
         if(Session::get('account')['is_admin']=='YES'){
@@ -48,10 +53,43 @@ class App_Controller extends Controller {
             return redirect('/');
         }
     }
-    public function add_staff(){
-        //add student
+    public function change_staff_status(Request $request){
+        if(Session::get('account')['is_admin']=='YES'){
+            $gets = $request->input();
+            $arr = array(
+                'institution' => getenv("APP_NAME"),
+                'public_key' => getenv("APP_PUBLIC_KEY"),
+                'method' => 'change_staff_status',
+                'data' => ['dni' => $gets["dni"]]);
+            $response = Http::withBody(json_encode($arr), 'application/json')->post("https://cloupping.com/api-ins");
+            $data = json_decode($response->body(), true);
+            //dd($arr);
+            return back();
+        }
+        else{
+            return redirect('/');
+        }
     }
-    public function del_student(){
-        //del student
-    }
+    public function change_staff_admin(Request $request){
+        if(Session::get('account')['is_admin']=='YES'){
+            $gets = $request->input();
+            $arr = array(
+                'institution' => getenv("APP_NAME"),
+                'public_key' => getenv("APP_PUBLIC_KEY"),
+                'method' => 'change_staff_admin',
+                'data' => ['dni' => $gets["dni"]]);
+                $response = Http::withBody(json_encode($arr), 'application/json')->post("https://cloupping.com/api-ins");
+            $data = json_decode($response->body(), true);
+            //dd($arr);
+            return back();
+        }
+        else{
+                return redirect('/');
+            }
+        }
+        
+        public function del_student(){
+            //
+        }
+    
 }

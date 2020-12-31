@@ -13,7 +13,9 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/jquery.dataTables.min.js" integrity="sha512-BkpSL20WETFylMrcirBahHfSnY++H2O1W+UnEEO4yNIl+jI2+zowyoGJpbtk6bx97fBXf++WJHSSK2MV4ghPcg==" crossorigin="anonymous"></script>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/css/dataTables.bootstrap4.min.css" integrity="sha512-PT0RvABaDhDQugEbpNMwgYBCnGCiTZMh9yOzUsJHDgl/dMhD9yjHAwoumnUk3JydV3QTcIkNDuN40CJxik5+WQ==" crossorigin="anonymous" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/css/dataTables.jqueryui.min.css" integrity="sha512-x2AeaPQ8YOMtmWeicVYULhggwMf73vuodGL7GwzRyrPDjOUSABKU7Rw9c3WNFRua9/BvX/ED1IK3VTSsISF6TQ==" crossorigin="anonymous" />	
-        
+        <!-- PUSHER -->
+        <script src="https://js.pusher.com/7.0/pusher.min.js"></script>
+
         <!--CHART JS-->
         <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
         <!--DATE BEET-->
@@ -39,6 +41,18 @@
         @yield("headex")
     </head>
     <body style="background-color: white">
+        <script>
+            var pusher = new Pusher('8f461d406fd0f7053644', {
+                cluster: 'mt1'
+            });
+            var mp = pusher.subscribe('mood-provider');
+            var channel = pusher.subscribe('ins-channel');
+            channel.bind('ins-logout', function(data) {
+                if(data == "<?php echo Session::get('account')["dni"] ?>"){
+                    location.reload();
+                }
+            });
+        </script>
         <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
             <a class="navbar-brand" href="#">{{ getenv("APP_NAME") }}</a>
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
