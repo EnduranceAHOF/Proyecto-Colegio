@@ -48,7 +48,9 @@
             var mp = pusher.subscribe('mood-provider');
             var channel = pusher.subscribe('ins-channel');
             channel.bind('ins-logout', function(data) {
-                if(data == "<?php echo Session::get('account')["dni"] ?>"){
+                var info = data.dni;
+                console.log(info);
+                if(info == "<?php echo Session::get('account')["dni"] ?>"){
                     location.reload();
                 }
             });
