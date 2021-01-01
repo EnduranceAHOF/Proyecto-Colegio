@@ -104,6 +104,23 @@ class App_Controller extends Controller {
             return ('/');
         }
     }    
+    public function add_course(Request $request){
+        if(Session::get('account')['is_admin']=='YES'){
+            $gets = $request->input();
+            $arr = array(
+                'institution' => getenv("APP_NAME"),
+                'public_key' => getenv("APP_PUBLIC_KEY"),
+                'method' => 'add_course',
+                'data' => ['grade_name' => $gets["grade_name"],'letter' => $gets["letter"],'number_students' => $gets["number_students"],'year' => $gets["year"]]
+            );
+            dd($arr);
+            $response = Http::withBody(json_encode($arr), 'application/json')->post("https://cloupping.com/api-ins");
+            return back();
+        }
+        else{
+            return ('/');
+        }
+    }    
     public function del_student(){
         //
     }
