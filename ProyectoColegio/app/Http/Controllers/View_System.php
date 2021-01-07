@@ -19,6 +19,7 @@ class View_System extends Controller {
             $message = session::get('message');
         }
         if($this->valSession()){
+            $this->periods();
             switch ($path) {
                 case "home":
                     return view('home');
@@ -39,7 +40,8 @@ class View_System extends Controller {
                     }
                 case "adm_courses":
                     if($this->isAdmin()){
-                        return view('adm_courses');
+                        $grades = $this->grades();
+                        return view('adm_courses')->with("grades",$grades);
                     }else{
                         return redirect('');
                     }
@@ -87,8 +89,12 @@ class View_System extends Controller {
             'public_key' => getenv("APP_PUBLIC_KEY"),
             'method' => 'list_periods'
         );
+
         $response = Http::withBody(json_encode($arr), 'application/json')->post("https://cloupping.com/api-ins");
         $data = json_decode($response->body(), true);
+        if($data["active_period"] != ''){
+            Session::put(['period' => $data["active_period"]] );
+        }
         return $data;       
     }
     private function staff(){
@@ -99,6 +105,17 @@ class View_System extends Controller {
         );
         $response = Http::withBody(json_encode($arr), 'application/json')->post("https://cloupping.com/api-ins");
         $data = json_decode($response->body(), true);
+        return $data;       
+    }
+    private function grades(){
+        $arr = array(
+            'institution' => getenv("APP_NAME"),
+            'public_key' => getenv("APP_PUBLIC_KEY"),
+            'method' => 'list_grades'
+        );
+        $response = Http::withBody(json_encode($arr), 'application/json')->post("https://cloupping.com/api-ins");
+        $data = json_decode($response->body(), true);
+        //dd($data);
         return $data;       
     }
 }

@@ -14,6 +14,8 @@ class App_Controller extends Controller {
             $token = Session::get('account')['token'];
             $response = Http::get("https://accounts.google.com/o/oauth2/revoke?token=$token");
             Session::forget('account');
+            Session::forget('periodo');
+
             sleep(1);
             return redirect('/');
         //}
@@ -110,8 +112,44 @@ class App_Controller extends Controller {
             $arr = array(
                 'institution' => getenv("APP_NAME"),
                 'public_key' => getenv("APP_PUBLIC_KEY"),
-                'method' => 'add_course',
-                'data' => ['grade_name' => $gets["grade_name"],'letter' => $gets["letter"],'number_students' => $gets["number_students"],'year' => $gets["year"]]
+                'method' => 'add_grade',
+                'data' => ['grade_id' => $gets["grade_id"],'section' => $gets["letter"]]
+            );
+            //dd($arr);
+            $response = Http::withBody(json_encode($arr), 'application/json')->post("https://cloupping.com/api-ins");
+            return back();
+        }
+        else{
+            return ('/');
+        }
+    }    
+    public function del_course(Request $request){
+        if(Session::get('account')['is_admin']=='YES'){
+            $gets = $request->input();
+            $arr = array(
+                'institution' => getenv("APP_NAME"),
+                'public_key' => getenv("APP_PUBLIC_KEY"),
+                'method' => 'del_grade',
+                'data' => ['id' => $gets["id"]]
+            );
+            //dd($arr);
+            $response = Http::withBody(json_encode($arr), 'application/json')->post("https://cloupping.com/api-ins");
+            return back();
+        }
+        else{
+            return ('/');
+        }
+    }    
+        
+
+    public function add_student(Request $request){
+        if(Session::get('account')['is_admin']=='YES'){
+            $gets = $request->input();
+            $arr = array(
+                'institution' => getenv("APP_NAME"),
+                'public_key' => getenv("APP_PUBLIC_KEY"),
+                'method' => 'add_student',
+                'data' => ['dni' => $gets["dni_stu"],'grade_name' => $gets["grade_name"],'letter' => $gets["letter"],'full_name' => $gets["full_name_stu"],'year' => $gets["year_stu"]]
             );
             dd($arr);
             $response = Http::withBody(json_encode($arr), 'application/json')->post("https://cloupping.com/api-ins");
