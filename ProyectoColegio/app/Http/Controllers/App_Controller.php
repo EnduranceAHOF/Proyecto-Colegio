@@ -10,7 +10,6 @@ use Illuminate\Support\Facades\Session;
 
 class App_Controller extends Controller {
     public function logout() {
-        //if(Session::has('account')){
             $token = Session::get('account')['token'];
             $response = Http::get("https://accounts.google.com/o/oauth2/revoke?token=$token");
             Session::forget('account');
@@ -18,7 +17,6 @@ class App_Controller extends Controller {
 
             sleep(1);
             return redirect('/');
-        //}
     }
     public function change_period(Request $request){
         if(Session::get('account')['is_admin']=='YES'){
@@ -29,7 +27,6 @@ class App_Controller extends Controller {
                 'method' => 'change_period',
                 'data' => ['period' => $gets["year"]]);
             $response = Http::withBody(json_encode($arr), 'application/json')->post("https://cloupping.com/api-ins");
-            //$data = json_decode($response->body(), true);
             return back();
         }
         else{
@@ -48,7 +45,6 @@ class App_Controller extends Controller {
             if($response->status() == 400){
                 return redirect('adm_periods')->with('message', 'Este periodo ya existe!');
             }
-            //$data = json_decode($response->body(), true);
             return back();
         }
         else{
@@ -64,8 +60,6 @@ class App_Controller extends Controller {
                 'method' => 'change_staff_status',
                 'data' => ['dni' => $gets["dni"]]);
             $response = Http::withBody(json_encode($arr), 'application/json')->post("https://cloupping.com/api-ins");
-            //$data = json_decode($response->body(), true);
-            //dd($arr);
             return back();
         }
         else{
@@ -81,8 +75,6 @@ class App_Controller extends Controller {
                 'method' => 'change_staff_admin',
                 'data' => ['dni' => $gets["dni"]]);
             $response = Http::withBody(json_encode($arr), 'application/json')->post("https://cloupping.com/api-ins");
-            //$data = json_decode($response->body(), true);
-            //dd($arr);
             return back();
         }
         else{
@@ -98,7 +90,6 @@ class App_Controller extends Controller {
                 'method' => 'add_staff',
                 'data' => ['dni' => $gets["dni"],'full_name' => $gets['full_name'],'email' => $gets['email'],'birth_date' => $gets['birth_date']]
             );
-            //dd($arr);
             $response = Http::withBody(json_encode($arr), 'application/json')->post("https://cloupping.com/api-ins");
             return back();
         }
@@ -115,7 +106,6 @@ class App_Controller extends Controller {
                 'method' => 'add_grade',
                 'data' => ['grade_id' => $gets["grade_id"],'section' => $gets["letter"]]
             );
-            //dd($arr);
             $response = Http::withBody(json_encode($arr), 'application/json')->post("https://cloupping.com/api-ins");
             return back();
         }
@@ -132,16 +122,13 @@ class App_Controller extends Controller {
                 'method' => 'del_grade',
                 'data' => ['id' => $gets["id"]]
             );
-            //dd($arr);
             $response = Http::withBody(json_encode($arr), 'application/json')->post("https://cloupping.com/api-ins");
             return back();
         }
         else{
             return ('/');
         }
-    }    
-        
-
+    }   
     public function add_student(Request $request){
         if(Session::get('account')['is_admin']=='YES'){
             $gets = $request->input();
@@ -149,7 +136,37 @@ class App_Controller extends Controller {
                 'institution' => getenv("APP_NAME"),
                 'public_key' => getenv("APP_PUBLIC_KEY"),
                 'method' => 'add_student',
-                'data' => ['dni' => $gets["dni_stu"],'grade_name' => $gets["grade_name"],'letter' => $gets["letter"],'full_name' => $gets["full_name_stu"],'year' => $gets["year_stu"]]
+                'data' => [               
+                    "dni" => $gets["rut"],
+                    "names" => $gets["nombres"],
+                    "last_f" => $gets["apellido_p"],
+                    "last_m" => $gets["apellido_m"],
+                    "sex" => $gets["ddlgenero"],
+                    "born_date" => $gets["fecha_nac"],
+                    "nationality" => $gets["nacionalidad"],
+                    "ethnic" => $gets["ddletina"],
+                    ]
+            );
+            $response = Http::withBody(json_encode($arr), 'application/json')->post("https://cloupping.com/api-ins");
+            if($response->status()==400){
+                return redirect('adm_students')->with('message', 'Este estudiante ya existe!');
+            }            
+            return back();
+        }
+        else{
+            return ('/');
+        }
+    }    
+    public function del_student(Request $request){
+        if(Session::get('account')['is_admin']=='YES'){
+            $gets = $request->input();
+            $arr = array(
+                'institution' => getenv("APP_NAME"),
+                'public_key' => getenv("APP_PUBLIC_KEY"),
+                'method' => 'del_student',
+                'data' => [               
+                    "dni" => $gets["dni"],
+                    ]
             );
             dd($arr);
             $response = Http::withBody(json_encode($arr), 'application/json')->post("https://cloupping.com/api-ins");
@@ -158,9 +175,12 @@ class App_Controller extends Controller {
         else{
             return ('/');
         }
-    }    
-    public function del_student(){
-        //
+    }
+    public function get_info(Request $request){
+        $gets = $request->input();
+        $rut = $gets["rut"];
+        $response = Http::get('https://scc.cloupping.com/get_info/?rut='.$rut);
+        return $response->body();
     }
     
 }

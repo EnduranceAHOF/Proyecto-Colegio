@@ -13,10 +13,10 @@ class View_System extends Controller {
         
         $path = $request->path();
         $gets = $request->input();
-        //dd($gets);
         $message = null;
         if(session::has('message')){
             $message = session::get('message');
+            //dd($message);
         }
         if($this->valSession()){
             $this->periods();
@@ -47,7 +47,8 @@ class View_System extends Controller {
                     }
                 case "adm_students":
                     if($this->isAdmin()){
-                        return view('adm_students');
+                        $students = $this->students();
+                        return view('adm_students')->with("students",$students)->with("message",$message);
                     }else{
                         return redirect('');
                     }
@@ -112,6 +113,17 @@ class View_System extends Controller {
             'institution' => getenv("APP_NAME"),
             'public_key' => getenv("APP_PUBLIC_KEY"),
             'method' => 'list_grades'
+        );
+        $response = Http::withBody(json_encode($arr), 'application/json')->post("https://cloupping.com/api-ins");
+        $data = json_decode($response->body(), true);
+        //dd($data);
+        return $data;       
+    }
+    private function students(){
+        $arr = array(
+            'institution' => getenv("APP_NAME"),
+            'public_key' => getenv("APP_PUBLIC_KEY"),
+            'method' => 'list_students'
         );
         $response = Http::withBody(json_encode($arr), 'application/json')->post("https://cloupping.com/api-ins");
         $data = json_decode($response->body(), true);

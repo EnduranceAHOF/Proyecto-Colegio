@@ -24,8 +24,10 @@ Route::get('/change_staff_status', [App_Controller::class, 'change_staff_status'
 Route::get('/change_staff_admin', [App_Controller::class, 'change_staff_admin']);
 Route::get('/add_new_period', [App_Controller::class, 'add_new_period']);
 Route::get('/add_course', [App_Controller::class, 'add_course']);
-Route::get('/del_course', [App_Controller::class, 'del_course']);
+//Route::get('/del_course', [App_Controller::class, 'del_course']);
 Route::get('/add_student', [App_Controller::class, 'add_student']);
+Route::get('/del_student', [App_Controller::class, 'del_student']);
+Route::get('/get_info', [App_Controller::class, 'get_info']);
 Route::get('/add_user', [App_Controller::class, 'add_user']);
 Route::get('/logout', [App_Controller::class, 'logout']);
 Route::get('/g-response',[Google_api::class, 'user_data']);
