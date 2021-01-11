@@ -52,6 +52,22 @@ class View_System extends Controller {
                     }else{
                         return redirect('');
                     }
+                case "adm_teachers":
+                    if($this->isAdmin()){
+                        //$students = $this->students();
+                        //->with("students",$students)->
+                        return view('adm_teachers')->with("message",$message);
+                    }else{
+                        return redirect('');
+                    }
+                case "adm_subject":
+                    if($this->isAdmin()){
+                        $subject = $this->subject_list();
+                        $subject_current = $this->subject_current_list();                        
+                        return view('adm_subject')->with("subject_list",$subject)->with("subject_current_list",$subject_current)->with("message",$message);
+                    }else{
+                        return redirect('');
+                    }
                 default:
                 return view('not_found')->with("path",$path);
             }
@@ -96,6 +112,9 @@ class View_System extends Controller {
         if($data["active_period"] != ''){
             Session::put(['period' => $data["active_period"]] );
         }
+        else{
+            Session::put(['period' => null] );
+        }
         return $data;       
     }
     private function staff(){
@@ -130,5 +149,28 @@ class View_System extends Controller {
         //dd($data);
         return $data;       
     }
+    private function subject_list(){
+        $arr = array(
+            'institution' => getenv("APP_NAME"),
+            'public_key' => getenv("APP_PUBLIC_KEY"),
+            'method' => 'list_all_matters'
+        );
+        $response = Http::withBody(json_encode($arr), 'application/json')->post("https://cloupping.com/api-ins");
+        $data = json_decode($response->body(), true);
+        //dd($data);
+        return $data;       
+    }
+    private function subject_current_list(){
+        $arr = array(
+            'institution' => getenv("APP_NAME"),
+            'public_key' => getenv("APP_PUBLIC_KEY"),
+            'method' => 'list_matters_in'
+        );
+        $response = Http::withBody(json_encode($arr), 'application/json')->post("https://cloupping.com/api-ins");
+        $data = json_decode($response->body(), true);
+        //dd($data);
+        return $data;
+    }
+    
 }
 

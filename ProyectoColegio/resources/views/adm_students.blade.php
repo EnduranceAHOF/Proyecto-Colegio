@@ -12,6 +12,7 @@ Admin Cursos
 
 @section("context")
 <div class="container">
+    <br>
     <h2 style="text-align: center;">Administrar Estudiantes 
             @if(Session::has('period'))
                 {{Session::get('period')}}
@@ -26,6 +27,7 @@ Admin Cursos
                 })
         </script>
     @endif
+    <!-- Add student -->
     <br>
     <button class="btn btn-success " type="button" data-toggle="collapse" data-target="#collapseStudents" aria-expanded="false" aria-controls="collapseStudents">Agregar Estudiante</button>
     <br>
@@ -175,6 +177,8 @@ Admin Cursos
         </form>
     </div>
     <br>
+    <!-- // -->
+
     <div class="table-responsive">
         <table class="table table-sm" style="text-align: center;" id="list_students">
             <thead class="thead-light">
@@ -182,6 +186,7 @@ Admin Cursos
                     <th scope="col">Nombre</th>
                     <th scope="col">Rut</th>
                     <th scope="col">Fecha de Nacimiento</th>
+                    <th scope="col">#</th>
                     <th scope="col">#</th>
                 </tr>
             </thead>
@@ -191,6 +196,33 @@ Admin Cursos
                         <td>{{$row["names"]}} {{$row["last_f"]}} {{$row["last_m"]}}</td>
                         <td>{{$row["dni"]}}</td>
                         <td>{{$row["born_date"]}} </td>                                                                                                                                                    
+                        <td>
+                        <button id="modalButtonStu{{$row["id"]}}" type="button" class="btn btn-primary" data-toggle="modal" data-target="#modalStu{{$row["id"]}}" data-backdrop="static" data-whatever="@mdo" >Editar</button>                                
+                            <div class="modal fade" id="modalStu{{$row["id"]}}" tabindex="-1" role="dialog" aria-labelledby="stuModalLabel" aria-hidden="true">
+                                <div class="modal-dialog" role="document">
+                                    <div class="modal-content" id="modal-content{{$row["id"]}}">
+                                        
+                                    </div>
+                                </div>
+                            </div>
+                            <script>
+                                $("#modalButtonStu{{$row["id"]}}").click(function(){
+                                    $.ajax({
+                                        type: "GET",
+                                        url: "/modal_student",
+                                        data: {id:"{{$row["id"]}}"},
+                                        success: function (data)
+                                        {
+                                            if(data == ""){
+                                                location.reload();
+                                            }else{
+                                                $("#modal-content{{$row["id"]}}").html(data);
+                                            }
+                                        }
+                                    });
+                                });
+                            </script>
+                        </td>
                         <td>
                             <a href="del_student?dni={{$row["dni"]}}" class="btn btn-danger ">Eliminar</a>
                         </td>

@@ -1,3 +1,11 @@
+<?php
+$periodenable = 'disabled';
+if(Session::has('period')){
+    if(Session::get('period') != null){
+        $periodenable = '';
+    }
+}
+?>
 <html>
     <head>
         <title>@yield("title")</title>
@@ -56,7 +64,7 @@
             });
         </script>
         <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-            <a class="navbar-brand" href="#">{{ getenv("APP_NAME") }}</a>
+            <a class="navbar-brand" href="#">{{ getenv("APP_NAME") }} {{Session::get('period')}} </a>
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
@@ -73,13 +81,15 @@
                     </li>
                     @if(Session::get('account')["is_admin"]=="YES")
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown"             aria-haspopup="true" aria-expanded="false">
                             Administrar
-                        </a>
+                        </a>        
                         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                             <a class="dropdown-item" href="adm_periods">Periodos</a>
                             <a class="dropdown-item" href="adm_users">Usuarios</a>
-                            <a class="dropdown-item" href="adm_courses">Cursos</a>
+                            <a class="dropdown-item {{$periodenable}}"  href="adm_courses">Cursos</a>
+                            <a class="dropdown-item {{$periodenable}}" href="adm_teachers">Profesores</a>
+                            <a class="dropdown-item {{$periodenable}}" href="adm_subject">Asignaturas</a>
                             <a class="dropdown-item" href="adm_students">Estudiantes</a>
                         </div>
                     </li>
