@@ -83,7 +83,7 @@ Admin Asignaturas
                         <td>{{$row["id_materia"]}}</td>
                         <td>{{$row["materia"]}}</td>                        
                         <td>
-                            <a href="" class="btn btn-danger ">Eliminar</a>
+                            <a href="del_subject?id={{$row["id_materia"]}}" class="btn btn-danger" >Eliminar</a>
                         </td>
                     </tr>               
                 @endforeach      

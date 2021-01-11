@@ -54,9 +54,9 @@ class View_System extends Controller {
                     }
                 case "adm_teachers":
                     if($this->isAdmin()){
-                        //$students = $this->students();
+                        $staff = $this->staff();
                         //->with("students",$students)->
-                        return view('adm_teachers')->with("message",$message);
+                        return view('adm_teachers')->with("staff",$staff)->with("message",$message);
                     }else{
                         return redirect('');
                     }

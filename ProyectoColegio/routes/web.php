@@ -32,6 +32,7 @@ Route::get('/edit_student', [App_Controller::class, 'edit_student']);
 Route::get('/get_info', [App_Controller::class, 'get_info']);
 Route::get('/add_user', [App_Controller::class, 'add_user']);
 Route::get('/add_subject', [App_Controller::class, 'add_subject']);
+Route::get('/del_subject', [App_Controller::class, 'del_subject']);
 Route::get('/logout', [App_Controller::class, 'logout']);
 Route::get('/g-response',[Google_api::class, 'user_data']);
 Route::get('/{param}',[View_System::class, 'main']);

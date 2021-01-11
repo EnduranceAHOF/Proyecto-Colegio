@@ -245,5 +245,42 @@ class App_Controller extends Controller {
         else{
             return ('/');
         }
-    }   
+    }  
+    public function del_subject(Request $request){
+        if(Session::get('account')['is_admin']=='YES'){
+            $gets = $request->input();
+            $arr = array(
+                'institution' => getenv("APP_NAME"),
+                'public_key' => getenv("APP_PUBLIC_KEY"),
+                'method' => 'del_matter',
+                'data' => ['id' => $gets["id"]]
+            );
+            $response = Http::withBody(json_encode($arr), 'application/json')->post("https://cloupping.com/api-ins");
+            $data = json_decode($response->body(), true); 
+            return back();
+        }
+        else{
+            return ('/');
+        }
+    }
+    public function add_teacher(Request $request){
+        if(Session::get('account')['is_admin']=='YES'){
+            $gets = $request->input();
+            //dd($gets);
+            $arr = array(
+                'institution' => getenv("APP_NAME"),
+                'public_key' => getenv("APP_PUBLIC_KEY"),
+                'method' => '',
+                'data' => ['id' => $gets["id"]]
+            );
+            //dd($arr);
+            $response = Http::withBody(json_encode($arr), 'application/json')->post("https://cloupping.com/api-ins");
+            $data = json_decode($response->body(), true); 
+            //dd($data);
+            return back();
+        }
+        else{
+            return ('/');
+        }
+    }
 }

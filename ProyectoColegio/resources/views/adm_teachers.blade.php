@@ -26,5 +26,25 @@ Admin Profesores
         </script>
     @endif
     
+    <div class="table-responsive">
+        <table class="table table-sm" style="text-align: center;" id="list_students">
+            <thead class="thead-light">
+                <tr>
+                    <th scope="col">Rut</th>
+                    <th scope="col">Nombre</th>
+                    <th scope="col">Administrar</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach($staff as $row)
+                    <tr>
+                        <td>{{$row["dni"]}}</td>
+                        <td>{{$row["full_name"]}}</td>                                                
+                        <td><button class="btn btn-primary">Administrar</button></td>
+                    </tr>               
+                @endforeach      
+            </tbody>
+        </table>
+    </div>
 </div>
 @endsection
