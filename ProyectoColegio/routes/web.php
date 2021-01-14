@@ -18,21 +18,20 @@ use App\Http\Controllers\View_System;
 
 
 Route::get('/', [Google_api::class, 'login']);
-// Route::get('/admin', [App_Controller::class], 'admin');
 Route::get('/change_period', [App_Controller::class, 'change_period']);
 Route::get('/change_staff_status', [App_Controller::class, 'change_staff_status']);
 Route::get('/change_staff_admin', [App_Controller::class, 'change_staff_admin']);
 Route::get('/add_new_period', [App_Controller::class, 'add_new_period']);
 Route::get('/add_course', [App_Controller::class, 'add_course']);
-//Route::get('/del_course', [App_Controller::class, 'del_course']);
 Route::get('/add_student', [App_Controller::class, 'add_student']);
-Route::get('/del_student', [App_Controller::class, 'del_student']);
-Route::get('/modal_student', [App_Controller::class, 'modal_student']);
-Route::get('/edit_student', [App_Controller::class, 'edit_student']);
 Route::get('/get_info', [App_Controller::class, 'get_info']);
 Route::get('/add_user', [App_Controller::class, 'add_user']);
+Route::get('/student_activate', [App_Controller::class, 'student_activate']);
 Route::get('/add_subject', [App_Controller::class, 'add_subject']);
 Route::get('/del_subject', [App_Controller::class, 'del_subject']);
+Route::get('/set_jefatura', [App_Controller::class, 'set_jefatura']);
+Route::get('/set_asignatura', [App_Controller::class, 'set_asignatura']);
 Route::get('/logout', [App_Controller::class, 'logout']);
 Route::get('/g-response',[Google_api::class, 'user_data']);
+Route::get('/modal_asignatura', [View_System::class, 'modal_asignatura']);
 Route::get('/{param}',[View_System::class, 'main']);

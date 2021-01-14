@@ -83,11 +83,12 @@ class App_Controller extends Controller {
     public function add_user(Request $request){
         if(Session::get('account')['is_admin']=='YES'){
             $gets = $request->input();
+            $us = Session::get('account')['full_name'];
             $arr = array(
                 'institution' => getenv("APP_NAME"),
                 'public_key' => getenv("APP_PUBLIC_KEY"),
                 'method' => 'add_staff',
-                'data' => ['dni' => $gets["dni"],'full_name' => $gets['full_name'],'email' => $gets['email'],'birth_date' => $gets['birth_date']]
+                'data' => ['enroller' => $us, 'dni' => $gets["dni"],'full_name' => $gets['full_name'],'email' => $gets['email'],'birth_date' => $gets['birth_date']]
             );
             $response = Http::withBody(json_encode($arr), 'application/json')->post("https://cloupping.com/api-ins");
             return back();
@@ -283,4 +284,66 @@ class App_Controller extends Controller {
             return ('/');
         }
     }
+    public function student_activate(Request $request){
+        if(Session::get('account')['is_admin']=='YES'){
+            $gets = $request->input();
+            //dd($gets);
+            $arr = array(
+                'institution' => getenv("APP_NAME"),
+                'public_key' => getenv("APP_PUBLIC_KEY"),
+                'method' => 'matriculate_student',
+                'data' => ['id' => $gets["id_stu"]]
+            );
+            //dd($arr);
+            $response = Http::withBody(json_encode($arr), 'application/json')->post("https://cloupping.com/api-ins");
+            $data = json_decode($response->body(), true); 
+            //dd($data);
+            return back();
+        }
+        else{
+            return ('/');
+        }
+    }
+    public function set_jefatura(Request $request){
+        if(Session::get('account')['is_admin']=='YES'){
+            $gets = $request->input();
+            //dd($gets);
+            $arr = array(
+                'institution' => getenv("APP_NAME"),
+                'public_key' => getenv("APP_PUBLIC_KEY"),
+                'method' => 'teacher_leader_course',
+                'data' => ['id' => $gets["id"],'dni' =>$gets["dni"]]
+            );
+            //dd($arr);
+            $response = Http::withBody(json_encode($arr), 'application/json')->post("https://cloupping.com/api-ins");
+            $data = json_decode($response->body(), true); 
+            //dd($data);
+            return back();
+        }
+        else{
+            return ('/');
+        }
+    }
+    public function set_asignatura(Request $request){
+        if(Session::get('account')['is_admin']=='YES'){
+            $gets = $request->input();
+            //dd($gets);
+            $arr = array(
+                'institution' => getenv("APP_NAME"),
+                'public_key' => getenv("APP_PUBLIC_KEY"),
+                'method' => 'teacher_matters',
+                'data' => ['dni' =>$gets["dni"],'idCurso' => $gets["idCurso"],'idMateria' => $gets["idMateria"],'method' => $gets["method"],]
+            );
+            //dd($arr);
+            $response = Http::withBody(json_encode($arr), 'application/json')->post("https://cloupping.com/api-ins");
+            $data = json_decode($response->body(), true); 
+            //dd($data);
+            return back();
+        }
+        else{
+            return ('/');
+        }
+    }
+    
+    
 }

@@ -55,8 +55,10 @@ class View_System extends Controller {
                 case "adm_teachers":
                     if($this->isAdmin()){
                         $staff = $this->staff();
+                        $grades = $this->grades();
+                        //$list_checked = $this->list_checked("12.320.344-5");
                         //->with("students",$students)->
-                        return view('adm_teachers')->with("staff",$staff)->with("message",$message);
+                        return view('adm_teachers')->with("staff",$staff)->with("grades",$grades)->with("message",$message);
                     }else{
                         return redirect('');
                     }
@@ -144,6 +146,7 @@ class View_System extends Controller {
             'public_key' => getenv("APP_PUBLIC_KEY"),
             'method' => 'list_students'
         );
+        //dd($arr);
         $response = Http::withBody(json_encode($arr), 'application/json')->post("https://cloupping.com/api-ins");
         $data = json_decode($response->body(), true);
         //dd($data);
@@ -171,6 +174,36 @@ class View_System extends Controller {
         //dd($data);
         return $data;
     }
-    
+    public function modal_asignatura(Request $request){
+        if(Session::get('account')['is_admin']=='YES'){
+            $gets = $request->input();
+            $full_name = $gets["full_name"];
+            $dni = $gets["dni"];
+            $data = $this->list_checked($dni);
+            //dd($data); 
+            $cursos = $this->grades();
+            $asignaturas = $this->subject_current_list();
+            return view("includes/mdl_asignaturas")->with("full_name",$full_name)->with("cursos",$cursos)->with("activos",$data)->with("asignaturas",$asignaturas)->with("dni",$dni);
+        }
+        else{
+            return ('/');
+        }
+    }
+    private function list_checked($dni){
+        $period = $this->periods()["active_period"];
+        $arr = array(
+            'institution' => getenv("APP_NAME"),
+            'public_key' => getenv("APP_PUBLIC_KEY"),
+            'method' => 'list_param_class',
+            'data' => [
+                'dni' => $dni , 'periodo' => $period,
+            ]
+        );
+        //dd($arr);
+        $response = Http::withBody(json_encode($arr), 'application/json')->post("https://cloupping.com/api-ins");
+        $data = json_decode($response->body(), true);
+        //dd($data);
+        return $data;
+    }
 }
 

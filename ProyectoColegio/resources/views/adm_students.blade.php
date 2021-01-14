@@ -7,13 +7,26 @@ Admin Cursos
 @endsection
 
 @section("headex")
-
+<script>
+const Toast = Swal.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 3000,
+    timerProgressBar: true,
+    onOpen: (toast) => {
+            toast.addEventListener('mouseenter', Swal.stopTimer)
+            toast.addEventListener('mouseleave', Swal.resumeTimer)
+          }
+})
+</script>
 @endsection
 
 @section("context")
+
 <div class="container">
     <br>
-    <h2 style="text-align: center;">Administrar Estudiantes 
+    <h2 style="text-align: center;" id="temp1">Administrar Estudiantes 
             @if(Session::has('period'))
                 {{Session::get('period')}}
             @endif            
@@ -27,206 +40,80 @@ Admin Cursos
                 })
         </script>
     @endif
-    <!-- Add student -->
     <br>
-    <button class="btn btn-success " type="button" data-toggle="collapse" data-target="#collapseStudents" aria-expanded="false" aria-controls="collapseStudents">Agregar Estudiante</button>
+    <!-- <button class="btn btn-primary btn-sm ">Administrador de Matrículas</button> -->
+    <a target="_blank" href="https://www.scc.cloupping.com/admin" class="btn btn-primary btn-sm">Proceso de Matrículas</a>
     <br>
-    <div class="collapse mt-2" id="collapseStudents">
-        <!--  -->
-        <form class="was-validated" action="add_student" method="GET">
-            <div class="modal-body">
-                <div class="form-row">
-                    <div class="form-group col-md-6">
-                        <label for="rutalumno">Rut</label>
-                        <input id="rutalumno" class="form-control is-invalid" autocomplete="off" name="rut" type="text" required=""  oninput="checkRut(this)" placeholder="Rut del alumno" minlength="6" maxlength="11">
-                        <script>
-                            function checkRut(rut) {
-                                $("#btnapisearch").removeClass("btn-secondary");
-                                $("#btnapisearch").removeClass("btn-success");
-                                $("#btnapisearch").addClass("btn-primary");
-                                $("#btnapisearch").attr("disabled",false);
-                                $("#btnapisearch").html("Autocompletar");
-                                var valor = rut.value.replace('.','');
-                                valor = valor.replace('-','');
-                                cuerpo = valor.slice(0,-1);
-                                dv = valor.slice(-1).toUpperCase();
-                                rut.value = cuerpo + '-'+ dv
-                                if(cuerpo.length < 7) { rut.setCustomValidity("RUT Incompleto"); return false;}
-                                suma = 0;
-                                multiplo = 2;
-                                for(i=1;i<=cuerpo.length;i++) {
-                                    index = multiplo * valor.charAt(cuerpo.length - i);
-                                    suma = suma + index;
-                                    if(multiplo < 7) { multiplo = multiplo + 1; } else { multiplo = 2; }
-                                }
-                                dvEsperado = 11 - (suma % 11);
-                                dv = (dv == 'K')?10:dv;
-                                dv = (dv == 0)?11:dv;
-                                if(dvEsperado != dv) { rut.setCustomValidity("RUT Inválido"); return false; }
-                                rut.setCustomValidity('');
-                            }
-                        </script>
-                    </div>
-                    <div class="form-group col-md-6">
-                        <label for="btnapisearch">Buscar datos por el rut</label>
-                        <button class="form-control btn btn-primary" type="button" id="btnapisearch">Autocompletar</button>
-                        <script>
-                        $("#btnapisearch").click(function(){
-                            $("#btnapisearch").html("Cargando");
-                            $("#btnapisearch").attr("disabled",true);
-                            var rut = $("#rutalumno").val();                           
-                            var res = rut.substring(0,2)+"."+rut.substring(2,5)+"."+rut.substring(5,10);
-                            $.ajax({
-                                type: "GET",
-                                url: "/get_info/",
-                                data: "rut="+res,
-                                success: function(data)
-                                {
-                                    if(data.length > 10){
-                                        var obj = JSON.parse(data);
-                                        var res2 = obj.full_name.split(" ");
-                                        var names = "";
-                                        for (i = 0; i < res2.length; i++) {
-                                            if(i==0){
-                                                $("#apellido_p").val(res2[i]);
-                                            }else if(i==1){
-                                                $("#apellido_m").val(res2[i]);
-                                            }else{
-                                                names = names + " " + res2[i];
-                                            }
-                                        }
-                                        $("#nombres").val(names);
-                                        $('#ddlgenero option[value="'+obj.gender+'"]').attr("selected", "selected");
-                                        $("#btnapisearch").attr("disabled",true);
-                                        $("#btnapisearch").removeClass("btn-primary");
-                                        $("#btnapisearch").removeClass("btn-secondary");
-                                        $("#btnapisearch").addClass("btn-success");
-                                        $("#btnapisearch").html("Actualizado");
-                                    }else{
-                                        $("#btnapisearch").removeClass("btn-primary");
-                                        $("#btnapisearch").addClass("btn-secondary");
-                                        $("#btnapisearch").attr("disabled",true);
-                                        $("#btnapisearch").html("No encontrad@ :(");
-                                    }
-                                },
-                                error: function(data2){
-                                    Swal.fire('Error! B', '', 'error')
-                                }
-                            });
-                        });
-                        </script>
-                    </div>
-                    <div class="form-group col-md-6">
-                        <label for="btnapisearch">Nombres</label>
-                        <input id="nombres" type="text" class="form-control" required="" name="nombres" minlength="2" placeholder="Nombres">
-                    </div>
-                    <div class="form-group col-md-6">
-                        <label for="btnapisearch">Apellido Paterno</label>
-                        <input id="apellido_p" type="text" class="form-control" required="" name="apellido_p" minlength="2" placeholder="Apellido paterno">
-                    </div>
-                    <div class="form-group col-md-6">
-                        <label for="btnapisearch">Apellido Materno</label>
-                        <input id="apellido_m" type="text" class="form-control" required="" name="apellido_m" minlength="2" placeholder="Apellido materno ">
-                    </div>
-                    <div class="form-group col-md-6">
-                        <label for="btnapisearch">Género</label>
-                        <select id="ddlgenero" class="custom-select mr-sm-2" autocomplete="off" name="ddlgenero" required="">
-                            <option disabled="" selected="" value="">Seleccionar</option>
-                            <option value="VAR">Hombre</option>
-                            <option value="MUJ">Mujer</option>
-                        </select>
-                    </div>
-                    <div class="form-group col-md-6">
-                        <label for="btnapisearch">Nacionalidad</label>
-                        <input type="text" class="form-control" required="" name="nacionalidad" minlength="4" placeholder="Nacionalidad ">
-                    </div>
-                    <div class="form-group col-md-6">
-                        <label for="btnapisearch">Etnia</label>
-                        <select class="custom-select mr-sm-2" autocomplete="off" name="ddletina" required="">
-                            <option selected="">Ninguna</option>
-                            <option>Mapuche</option>
-                            <option>Aymara</option>
-                            <option>Atacameña</option>
-                            <option>Diaguita</option>
-                            <option>Otro</option>
-                        </select>
-                    </div>
-                    <div class="form-group col-md-6">
-                        <label for="btnapisearch">Fecha de Nacimiento</label>
-                        <input id="thedate" class="form-control" type="date" name="fecha_nac" value="" required=""/>
-                    </div>
-                    <div class="form-group col-md-6">
-                        <label for="btnapisearch">Edad</label>
-                        <input id="age" class="form-control" type="text" value="" readonly=""/>
-                        <script>
-                            $('#thedate').change(function () {
-                                var date = $("#thedate").val();
-                                dob = new Date(date);
-                                var today = new Date();
-                                var age = Math.floor((today - dob) / (365.25 * 24 * 60 * 60 * 1000));
-                                $('#age').val(age);
-                            });
-                        </script>
-                    </div>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
-                <button type="submit" class="btn btn-success">Guardar</button>
-            </div>
-        </form>
-    </div>
     <br>
-    <!-- // -->
-
     <div class="table-responsive">
         <table class="table table-sm" style="text-align: center;" id="list_students">
             <thead class="thead-light">
                 <tr>
+                    <th scope="col">ID</th>
                     <th scope="col">Nombre</th>
                     <th scope="col">Rut</th>
-                    <th scope="col">Fecha de Nacimiento</th>
-                    <th scope="col">#</th>
-                    <th scope="col">#</th>
+                    <th scope="col">Curso</th>
+                    <th scope="col">Apoderado</th>
+                    <th scope="col">Centro de Padres</th>
+                    <th scope="col">Matrícula</th>
                 </tr>
             </thead>
             <tbody>
                 @foreach($students as $row)
                     <tr>
-                        <td>{{$row["names"]}} {{$row["last_f"]}} {{$row["last_m"]}}</td>
-                        <td>{{$row["dni"]}}</td>
-                        <td>{{$row["born_date"]}} </td>                                                                                                                                                    
+                        <td>{{$row["id_stu"]}}</td>
+                        <td>{{$row["nombre_stu"]}}</td>
+                        <td>{{$row["dni_stu"]}}</td>
+                        <td>{{$row["curso"]}} </td>
+                        <td>{{$row["apoderado"]}} </td>
+                        <td>{{$row["centro_padres"]}} </td>
                         <td>
-                        <button id="modalButtonStu{{$row["id"]}}" type="button" class="btn btn-primary" data-toggle="modal" data-target="#modalStu{{$row["id"]}}" data-backdrop="static" data-whatever="@mdo" >Editar</button>                                
-                            <div class="modal fade" id="modalStu{{$row["id"]}}" tabindex="-1" role="dialog" aria-labelledby="stuModalLabel" aria-hidden="true">
-                                <div class="modal-dialog" role="document">
-                                    <div class="modal-content" id="modal-content{{$row["id"]}}">
-                                        
-                                    </div>
-                                </div>
+                            <div class="custom-control custom-switch">
+                                @if($row["matricula"] == "si")
+                                    <input type="checkbox" class="custom-control-input" id="customSwitch{{$row["id_stu"]}}" checked="">
+                                    <label class="custom-control-label text-success" for="customSwitch{{$row["id_stu"]}}" style="width:112px" id="labelMatricula{{$row["id_stu"]}}">Matriculado</label>
+                                @else
+                                    <input type="checkbox" class="custom-control-input" id="customSwitch{{$row["id_stu"]}}" >
+                                    <label class="custom-control-label text-danger" for="customSwitch{{$row["id_stu"]}}" style="width:112px" id="labelMatricula{{$row["id_stu"]}}">No Matriculado</label>
+                                @endif
                             </div>
                             <script>
-                                $("#modalButtonStu{{$row["id"]}}").click(function(){
-                                    $.ajax({
-                                        type: "GET",
-                                        url: "/modal_student",
-                                        data: {id:"{{$row["id"]}}"},
-                                        success: function (data)
-                                        {
-                                            if(data == ""){
-                                                location.reload();
-                                            }else{
-                                                $("#modal-content{{$row["id"]}}").html(data);
-                                            }
+                            
+                            $("#customSwitch{{$row["id_stu"]}}").click(function (){
+                                Swal.fire({
+                                    icon: 'info',
+                                    title: 'Cargando',
+                                    showConfirmButton: false,
+                                })
+                                $.ajax({
+                                    type: "GET",
+                                    url: "/student_activate",
+                                    data:{
+                                    id_stu: '{{$row["id_stu"]}}'  
+                                    },
+                                    success: function (data)
+                                    {
+                                        $("#result").html(data);
+                                        if($("#customSwitch{{$row["id_stu"]}}").is(":checked")){                                       
+                                            $("#labelMatricula{{$row["id_stu"]}}").removeClass('text-danger');
+                                            $("#labelMatricula{{$row["id_stu"]}}").addClass('text-success');
+                                            $("#labelMatricula{{$row["id_stu"]}}").html('Matriculado');
                                         }
-                                    });
+                                        else{                                       
+                                            $("#labelMatricula{{$row["id_stu"]}}").removeClass('text-succes');
+                                            $("#labelMatricula{{$row["id_stu"]}}").addClass('text-danger');
+                                            $("#labelMatricula{{$row["id_stu"]}}").html('No Matriculado');
+                                        }
+                                        Toast.fire({
+                                            icon: 'success', 
+                                            title: 'Completado'
+                                        })
+                                    }
                                 });
+                            });
                             </script>
                         </td>
-                        <td>
-                            <a href="del_student?dni={{$row["dni"]}}" class="btn btn-danger ">Eliminar</a>
-                        </td>
-                    </tr>               
+                    </tr>             
                 @endforeach                      
             </tbody>
         </table>
@@ -259,4 +146,5 @@ Admin Cursos
         } );
     </script>
 </div>
+
 @endsection

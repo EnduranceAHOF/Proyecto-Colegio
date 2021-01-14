@@ -71,13 +71,11 @@ if(Session::has('period')){
 
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav mr-auto">
-                    <li class="nav-item active">
+                    <li class="nav-item">
                         <a class="nav-link" href="home">Inicio</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">
-
-                        </a>
+                        <a class="nav-link" href="#">Correos</a>
                     </li>
                     @if(Session::get('account')["is_admin"]=="YES")
                     <li class="nav-item dropdown">
@@ -88,8 +86,8 @@ if(Session::has('period')){
                             <a class="dropdown-item" href="adm_periods">Periodos</a>
                             <a class="dropdown-item" href="adm_users">Usuarios</a>
                             <a class="dropdown-item {{$periodenable}}"  href="adm_courses">Cursos</a>
-                            <a class="dropdown-item {{$periodenable}}" href="adm_teachers">Profesores</a>
                             <a class="dropdown-item {{$periodenable}}" href="adm_subject">Asignaturas</a>
+                            <a class="dropdown-item {{$periodenable}}" href="adm_teachers">Profesores</a>
                             <a class="dropdown-item" href="adm_students">Estudiantes</a>
                         </div>
                     </li>

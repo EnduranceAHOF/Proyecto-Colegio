@@ -68,8 +68,8 @@ Admin Asignaturas
         </form>
     </div>
     <br>
-    <div class="table-responsive">
-        <table class="table table-sm" style="text-align: center;" id="list_students">
+    <div class="table-responsive" >
+        <table class="table table-sm" style="text-align: center;" id="list_subject">
             <thead class="thead-light">
                 <tr>
                     <th scope="col">ID</th>
@@ -90,5 +90,32 @@ Admin Asignaturas
             </tbody>
         </table>
     </div>
+    <script>
+        $(document).ready( function () {
+            $('#list_subject').DataTable({
+                    order: [],
+                    language: {
+                        "decimal": "",
+                        "emptyTable": "No hay información",
+                        "info": "Mostrando _START_ a _END_ de _TOTAL_ Filas",
+                        "infoEmpty": "Mostrando 0 to 0 of 0 Filas",
+                        "infoFiltered": "(Filtrado de MAX total Filas)",
+                        "infoPostFix": "",
+                        "thousands": ",",
+                        "lengthMenu": "Mostrar _MENU_ Filas",
+                        "loadingRecords": "Cargando...",
+                        "processing": "Procesando...",
+                        "search": "Buscar:",
+                        "zeroRecords": "Sin resultados encontrados",
+                        "paginate": {
+                            "first": "Primero",
+                            "last": "Ultimo",
+                            "next": "Siguiente",
+                            "previous": "Anterior"
+                            }
+                    },
+                });
+        } );
+    </script>
 </div>
 @endsection
