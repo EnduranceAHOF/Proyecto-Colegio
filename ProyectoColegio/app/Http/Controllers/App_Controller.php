@@ -343,7 +343,20 @@ class App_Controller extends Controller {
         else{
             return ('/');
         }
+    }  
+    public function create_group(Request $request){
+        $gets = $request->input();
+        $id = Session::get('account')["dni"];
+        //dd($id);
+        $arr = array(
+            'institution' => getenv("APP_NAME"),
+            'public_key' => getenv("APP_PUBLIC_KEY"),
+            'method' => 'add_list_mail_groups',
+            'data' => ["id_creador" => $id, "nombre_grupo" => $gets["nombre_grupo"]]
+        );
+        $response = Http::withBody(json_encode($arr), 'application/json')->post("https://cloupping.com/api-ins");
+        $data = json_decode($response->body(), true); 
+        //dd($data);
+        return back();
     }
-    
-    
 }

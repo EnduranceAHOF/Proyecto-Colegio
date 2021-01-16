@@ -6,39 +6,40 @@
     </button>
 </div>
 <div class="modal-body">
-<div class="table-responsive table-bordered">
-    <table class="table table-sm" style="text-align: center;" id="">
-        <thead class="thead-light">
-            <tr>
-                <th scope="col"  style="width: 30px"></th>
-                @foreach($cursos as $curso)
-                    <th scope="col" style="width: 30px">{{$curso["abreviado"]}}</th>
-                @endforeach
-            </tr>
-        </thead>
-        <tbody>
-            @foreach($asignaturas as $asignatura)
-            <tr>
-                <td>{{$asignatura["materia"]}}</td>
-                @foreach($cursos as $curso)
-                    <?php $checked = ""; ?>
-                    @foreach($activos as $active)
-                        @if($active["id_curso_periodo"] == $curso["id"] && $active["id_materia"] == $asignatura["id_materia"])
-                            <?php $checked = 'checked=""'; ?>
-                        @endif
+    <div class="table-responsive table-bordered">
+        <table class="table table-sm" style="text-align: center;" id="">
+            <thead class="thead-light">
+                <tr>
+                    <th scope="col"  style="width: 30px"></th>
+                    @foreach($cursos as $curso)
+                        <th scope="col" style="width: 30px">{{$curso["abreviado"]}}</th>
                     @endforeach
-                    <td scope="col">
-                        <div class="custom-control custom-switch">
-                            <input type="checkbox" {{$checked}} class="custom-control-input input-trigger" datac="{{$curso["id"]}}" datam="{{$asignatura["id_materia"]}}"  id="cursos{{$curso["id"]}}-{{$asignatura["id_materia"]}}" >
-                            <label class="custom-control-label text-success" for="cursos{{$curso["id"]}}-{{$asignatura["id_materia"]}}"></label>
-                        </div>
-                    </td>
-                       
+                </tr>
+            </thead>
+            <tbody>
+                @foreach($asignaturas as $asignatura)
+                <tr>
+                    <td>{{$asignatura["materia"]}}</td>
+                    @foreach($cursos as $curso)
+                        <?php $checked = ""; ?>
+                        @foreach($activos as $active)
+                            @if($active["id_curso_periodo"] == $curso["id"] && $active["id_materia"] == $asignatura["id_materia"])
+                                <?php $checked = 'checked=""'; ?>
+                            @endif
+                        @endforeach
+                        <td scope="col">
+                            <div class="custom-control custom-switch">
+                                <input type="checkbox" {{$checked}} class="custom-control-input input-trigger" datac="{{$curso["id"]}}" datam="{{$asignatura["id_materia"]}}"  id="cursos{{$curso["id"]}}-{{$asignatura["id_materia"]}}" >
+                                <label class="custom-control-label text-success" for="cursos{{$curso["id"]}}-{{$asignatura["id_materia"]}}"></label>
+                            </div>
+                        </td>
+                        
+                    @endforeach
+                </tr>
                 @endforeach
-            </tr>
-            @endforeach
-        </tbody>
-    </table>
+            </tbody>
+        </table>
+    </div>
 </div>
 <div class="modal-footer">
     <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>

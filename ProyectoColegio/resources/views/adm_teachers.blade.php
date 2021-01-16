@@ -57,11 +57,29 @@ const Toast = Swal.mixin({
                         <td>
                             <select name="select" class="form-control" id="select{{$id_staff}}">
                                 <option value="0">Seleccionar...</option>
+                                @php
+                                    $arr = array();
+                                @endphp
                                 @foreach($grades as $row2)
-                                    @if($row["full_name"] == $row2["profesor"])
+                                    @if($row["full_name"] == $row2["profesor"] )
                                         <option selected value="{{$row2["id"]}}" >{{$row2["nombre_curso"]}} - {{$row2["seccion"]}}</option>
+                                        @php
+                                            array_push($arr,$row2["profesor"])
+                                        @endphp
                                     @else
-                                        <option value="{{$row2["id"]}}" >{{$row2["nombre_curso"]}} - {{$row2["seccion"]}}</option>
+                                        @php
+                                            $flag = true;
+                                        @endphp
+                                        @foreach($staff as $row3)
+                                            @if($row3["full_name"] == $row2["profesor"])
+                                                @php
+                                                    $flag = false;
+                                                @endphp 
+                                            @endif
+                                        @endforeach                                        
+                                        @if($flag)
+                                            <option value="{{$row2["id"]}}" >{{$row2["nombre_curso"]}} - {{$row2["seccion"]}}</option>
+                                        @endif    
                                     @endif
                                 @endforeach
                             </select>

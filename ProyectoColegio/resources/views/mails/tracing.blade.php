@@ -1,14 +1,13 @@
 <!DOCTYPE html> 
-
-
 @extends("layouts.mcdn")
 @section("title")
-Inicio
+Test Section
 @endsection
 
 @section("headex")
+
 @endsection
 
 @section("context")
-
+Hola
 @endsection

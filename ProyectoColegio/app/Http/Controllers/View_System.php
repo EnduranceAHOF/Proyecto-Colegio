@@ -56,8 +56,6 @@ class View_System extends Controller {
                     if($this->isAdmin()){
                         $staff = $this->staff();
                         $grades = $this->grades();
-                        //$list_checked = $this->list_checked("12.320.344-5");
-                        //->with("students",$students)->
                         return view('adm_teachers')->with("staff",$staff)->with("grades",$grades)->with("message",$message);
                     }else{
                         return redirect('');
@@ -70,6 +68,18 @@ class View_System extends Controller {
                     }else{
                         return redirect('');
                     }
+                case "mail_groups":
+                    $list_groups = $this->list_groups();
+                    $list_students_groups = $this->list_students_groups();
+                    return view('mails/groups')->with("list_groups",$list_groups)->with("list_students_groups",$list_students_groups)->with("message",$message);                    
+                case "mail_mails_sent":
+                    return view('mails/mails_sent');                    
+                case "mail_send_mail":
+                    return view('mails/send_mail');                    
+                case "mail_template":
+                    return view('mails/template');
+                case "mail_tracing":
+                    return view('mails/tracing');
                 default:
                 return view('not_found')->with("path",$path);
             }
@@ -204,6 +214,38 @@ class View_System extends Controller {
         $data = json_decode($response->body(), true);
         //dd($data);
         return $data;
+    }
+    private function list_groups(){
+        $arr = array(
+            'institution' => getenv("APP_NAME"),
+            'public_key' => getenv("APP_PUBLIC_KEY"),
+            'method' => 'list_mail_groups'
+        );
+        //dd($arr);
+        $response = Http::withBody(json_encode($arr), 'application/json')->post("https://cloupping.com/api-ins");
+        $data = json_decode($response->body(), true);
+        //dd($data);
+        return $data;       
+    }
+    private function list_students_groups(){
+        $arr = array(
+            'institution' => getenv("APP_NAME"),
+            'public_key' => getenv("APP_PUBLIC_KEY"),
+            'method' => 'list_students_groups'
+        );
+        //dd($arr);
+        $response = Http::withBody(json_encode($arr), 'application/json')->post("https://cloupping.com/api-ins");
+        $data = json_decode($response->body(), true);
+        //dd($data);
+        return $data;       
+    }
+    public function modal_edit_group(Request $request){
+        $gets = $request->input();
+        $nombre = $gets["nombre"];
+        $encargado = $gets["encargado"];
+        $id_grupo = $gets["id_grupo"];
+        $list_groups = $this->list_groups();
+        return view("includes/mdl_edit_group")->with("nombre",$nombre)->with("encargado",$encargado)->with("list_groups",$list_groups)->with("id_grupo",$id_grupo);    
     }
 }
 

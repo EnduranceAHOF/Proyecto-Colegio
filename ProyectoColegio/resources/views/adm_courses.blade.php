@@ -108,7 +108,13 @@ Administrar Estudiantes
                             <td>{{$row["nombre_curso"]}}</td>
                             <td>{{$row["seccion"]}}</td>
                             <!-- {{$row["profesor"]}} -->
-                            <td> El Almeja</td>                                                    
+                            <td>
+                                @if($row["profesor"] == null)
+                                    <a href="adm_teachers">Asignar Profesor</a>
+                                @else
+                                    <strong>{{$row["profesor"]}}</strong> 
+                                @endif 
+                            </td>                                                    
                             <td>
                                 <a href="/del_course?id={{$row["id"]}}" class="btn btn-danger ">Eliminar</a>
                             </td>
