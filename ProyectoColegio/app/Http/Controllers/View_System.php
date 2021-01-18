@@ -150,6 +150,18 @@ class View_System extends Controller {
         //dd($data);
         return $data;       
     }
+    private function students_enrollment(){
+        $arr = array(
+            'institution' => getenv("APP_NAME"),
+            'public_key' => getenv("APP_PUBLIC_KEY"),
+            'method' => 'list_students_matriculated'
+        );
+        //dd($arr);
+        $response = Http::withBody(json_encode($arr), 'application/json')->post("https://cloupping.com/api-ins");
+        $data = json_decode($response->body(), true);
+        //dd($data);
+        return $data;       
+    }
     private function students(){
         $arr = array(
             'institution' => getenv("APP_NAME"),
@@ -216,6 +228,7 @@ class View_System extends Controller {
         return $data;
     }
     private function list_groups(){
+        
         $arr = array(
             'institution' => getenv("APP_NAME"),
             'public_key' => getenv("APP_PUBLIC_KEY"),
@@ -245,7 +258,23 @@ class View_System extends Controller {
         $encargado = $gets["encargado"];
         $id_grupo = $gets["id_grupo"];
         $list_groups = $this->list_groups();
-        return view("includes/mdl_edit_group")->with("nombre",$nombre)->with("encargado",$encargado)->with("list_groups",$list_groups)->with("id_grupo",$id_grupo);    
+        $students_enrollment = $this->students_enrollment();
+        $list_students_items_groups = $this->list_students_items_groups($id_grupo);
+        $staff = $this->staff();
+        return view("includes/mdl_edit_group")->with("staff",$staff)->with("nombre",$nombre)->with("students_enrollment",$students_enrollment)->with("encargado",$encargado)->with("list_groups",$list_groups)->with("id_grupo",$id_grupo)->with("list_students_items_groups",$list_students_items_groups);    
+    }
+    private function list_students_items_groups($id_grupo){
+        $arr = array(
+            'institution' => getenv("APP_NAME"),
+            'public_key' => getenv("APP_PUBLIC_KEY"),
+            'method' => 'list_item_mail_groups',
+            'data' => [ "id_grupo" => $id_grupo ]
+        );
+        //dd($arr);
+        $response = Http::withBody(json_encode($arr), 'application/json')->post("https://cloupping.com/api-ins");
+        $data = json_decode($response->body(), true);
+        //dd($data);
+        return $data;       
     }
 }
 

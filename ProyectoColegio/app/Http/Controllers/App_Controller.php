@@ -10,12 +10,14 @@ use Illuminate\Support\Facades\Session;
 
 class App_Controller extends Controller {
     public function logout() {
+        if(Session::has('account')){
             $token = Session::get('account')['token'];
             $response = Http::get("https://accounts.google.com/o/oauth2/revoke?token=$token");
-            Session::forget('account');
-            Session::forget('periodo');
-            sleep(1);
-            return redirect('/');
+        }    
+        Session::forget('account');
+        Session::forget('periodo');
+        sleep(2);
+        return redirect('/');
     }
     public function change_period(Request $request){
         if(Session::get('account')['is_admin']=='YES'){
@@ -74,6 +76,12 @@ class App_Controller extends Controller {
                 'method' => 'change_staff_admin',
                 'data' => ['dni' => $gets["dni"]]);
             $response = Http::withBody(json_encode($arr), 'application/json')->post("https://cloupping.com/api-ins");
+            if($gets["dni"] == Session::get('account')['dni']){
+                $data = Session::get('account');
+                $data['is_admin'] = "NO";
+                Session::forget('account');
+                Session::put('account',$data);
+            }
             return back();
         }
         else{
@@ -358,5 +366,68 @@ class App_Controller extends Controller {
         $data = json_decode($response->body(), true); 
         //dd($data);
         return back();
+    }
+    public function change_name_group(Request $request){
+        $gets = $request->input();
+        $dni = Session::get('account')['dni'];
+        //dd($dni);
+        $arr = array(
+            'institution' => getenv("APP_NAME"),
+            'public_key' => getenv("APP_PUBLIC_KEY"),
+            'method' => 'edit_list_mail_groups',
+            'data' => ["nombre_grupo" => $gets["nombre"], "id_grupo" => $gets["id_grupo"], "dni" => $dni]
+        );
+        //dd($arr);
+        $response = Http::withBody(json_encode($arr), 'application/json')->post("https://cloupping.com/api-ins");
+        $data = json_decode($response->body(), true); 
+        //dd($data);
+    }
+    public function del_group(Request $request){
+        $gets = $request->input();
+        $id = Session::get('account')["dni"];
+        dd($gets);
+        $arr = array(
+            'institution' => getenv("APP_NAME"),
+            'public_key' => getenv("APP_PUBLIC_KEY"),
+            'method' => '',
+            'data' => ["id_creador" => $id, "nombre_grupo" => $gets["nombre_grupo"]]
+        );
+        $response = Http::withBody(json_encode($arr), 'application/json')->post("https://cloupping.com/api-ins");
+        $data = json_decode($response->body(), true); 
+        //dd($data);
+        return back();
+    }
+    public function add_student_to_group(Request $request){
+        $gets = $request->input();
+        //dd($gets);
+        $dni = Session::get('account')['dni'];
+        $arr = array(
+            'institution' => getenv("APP_NAME"),
+            'public_key' => getenv("APP_PUBLIC_KEY"),
+            'method' => 'add_student_mail_group',
+            'data' => ["id_grup" => $gets["id_grup"], "id_stu" => $gets["id_stu"], "dni" => $dni]
+        );
+        //dd($arr);
+        $response = Http::withBody(json_encode($arr), 'application/json')->post("https://cloupping.com/api-ins");
+        $data = json_decode($response->body(), true); 
+        //dd($data);
+        return $response->body();
+    }
+    public function del_student_from_group(Request $request){
+        $gets = $request->input();
+        //dd($gets);
+        $dni = Session::get('account')['dni'];
+        $arr = array(
+            'institution' => getenv("APP_NAME"),
+            'public_key' => getenv("APP_PUBLIC_KEY"),
+            'method' => 'del_student_mail_group',
+            'data' => ["id_grup" => $gets["id_grup"], "id_item" => $gets["id_item"], "dni" => $dni]
+        );
+        //dd($arr);
+        $response = Http::withBody(json_encode($arr), 'application/json')->post("https://cloupping.com/api-ins");
+        $data = json_decode($response->body(), true); 
+        //dd($data);
+        //return $gets["id_item"];
+        return $response->status();
     }
 }

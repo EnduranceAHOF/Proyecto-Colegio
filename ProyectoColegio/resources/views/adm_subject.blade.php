@@ -42,16 +42,18 @@ Admin Asignaturas
                     <input type="text" hidden="" id="idMateria" name="idMateria">
                     <input type="text" class="form-control"  placeholder="Buscar...(ej: Matemática)" id="autocomplete">
                     <script>
-                    var countries = [ 
-                        @foreach($subject_list as $row)
-                            { data: '{{$row["id"]}}', value: '{{$row["nombre"]}}' },                    
-                        @endforeach
-                    ];
-                    $("#autocomplete").keyup(function(){
-                        $("#autocomplete").addClass('is-invalid');
-                        $("#autocomplete").removeClass('is-valid');
-                    });
+                        var countries = [ 
+                            @foreach($subject_list as $row)
+                                { data: '{{$row["id"]}}', value: '{{$row["name"]}}' },                    
+                            @endforeach
+                        ];
+                        $("#autocomplete").keyup(function(){
+                            $("#autocomplete").addClass('is-invalid');
+                            $("#autocomplete").removeClass('is-valid');
+                        });
+                        
                         $('#autocomplete').autocomplete({
+                            minChars: 3,
                             lookup: countries,
                             onSelect: function (suggestion) {
                                 $("#idMateria").val(suggestion.data);

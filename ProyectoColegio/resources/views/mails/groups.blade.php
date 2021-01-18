@@ -5,7 +5,27 @@ Test Section
 @endsection
 
 @section("headex")
+<script>
+const Toast = Swal.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 2000,
+    timerProgressBar: true,
+    onOpen: (toast) => {
+            toast.addEventListener('mouseenter', Swal.stopTimer)
+            toast.addEventListener('mouseleave', Swal.resumeTimer)
+          }
+})
+</script>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.devbridge-autocomplete/1.4.11/jquery.autocomplete.min.js" integrity="sha512-uxCwHf1pRwBJvURAMD/Gg0Kz2F2BymQyXDlTqnayuRyBFE7cisFCh2dSb1HIumZCRHuZikgeqXm8ruUoaxk5tA==" crossorigin="anonymous"></script>
+<style>.autocomplete-suggestions { border: 1px solid #999; background: #FFF; overflow: auto; }
+.autocomplete-suggestion { padding: 2px 5px; white-space: nowrap; overflow: hidden; }
+.autocomplete-selected { background: #F0F0F0; }
+.autocomplete-suggestions strong { font-weight: normal; color: #3399FF; }
+.autocomplete-group { padding: 2px 5px; }
+.autocomplete-group strong { display: block; border-bottom: 1px solid #000; }</style>
 @endsection
 
 @section("context")
@@ -37,53 +57,70 @@ Test Section
                             </thead>
                             <tbody>
                                 @foreach($list_groups as $row)
-                                    <tr>                                                                               
-                                        <td>{{$row["nombre"]}}</td>
+                                    <tr>                                                                                                                      
+                                        <td>
+                                            @if($row["id_creador"] != "INS")
+                                                <span id="spanRow{{$row["id_grupo"]}}">{{$row["nombre"]}}</span>
+                                            @else
+                                                {{$row["nombre"]}}
+                                            @endif
+                                        </td>
                                         <td>{{$row["encargado"]}}</td>                                        
-                                        <td><button class="btn btn-primary btn-sm" id="group_selected">Seleccionar</button></td>
-                                        <td>
-                                            @if($row["id_creador"] != "INS")
-                                                <button type="button" class="btn btn-primary" data-toggle="modal" data-target=".bd-example-modal-xl" id="modalEditGroup{{$row["id_creador"]}}">Editar</button>                           
+                                        <td><button class="btn btn-primary btn-sm" >Seleccionar</button></td>
+                                        @if($row["dni_creador"] == Session::get('account')['dni'] || Session::get('account')['is_admin']=='YES')
+                                            @if(Session::get('account')['is_admin']=='YES' && $row["id_creador"] == "INS")
+                                                <td>
+                                                    <button type="button" class="btn btn-primary" disabled="" data-toggle="modal" data-target=".bd-example-modal-xl" >Editar</button>
+                                                </td>
+                                                <td>
+                                                    <button class="btn btn-danger btn-sm" disabled="">Eliminar</button>
+                                                </td>
                                             @else
-                                                <button type="button" class="btn btn-primary" disabled="" data-toggle="modal" data-target=".bd-example-modal-xl" >Editar</button>
+                                                <td>
+                                                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target=".bd-example-modal-xl" id="modalEditGroup{{$row["id_grupo"]}}">Editar</button>
+                                                    <script>
+                                                        $("#modalEditGroup{{$row["id_grupo"]}}").click(function(){
+                                                            Swal.fire({
+                                                                icon: 'info',
+                                                                title: 'Cargando',
+                                                                showConfirmButton: false,
+                                                            })
+                                                            $.ajax({
+                                                                type: "GET",
+                                                                url: "/modal_edit_group",
+                                                                data:{
+                                                                    nombre:'{{$row["nombre"]}}',
+                                                                    encargado:'{{$row["encargado"]}}',
+                                                                    id_grupo:'{{$row["id_grupo"]}}'
+                                                                },
+                                                                success: function (data)
+                                                                {
+                                                                    $("#modalContent").html(data);
+                                                                    Toast.fire({
+                                                                        icon: 'success',
+                                                                        title: 'Completado'
+                                                                    })
+                                                                }
+                                                            });
+                                                        });
+                                                    </script>
+                                                </td>
+                                                <td>
+                                                    <a href="del_group?id={{$row["id_grupo"]}}&nombre={{$row["nombre"]}}" class="btn btn-danger btn-sm" >Eliminar</a>
+                                                </td>
                                             @endif
-                                            <script>
-                                                $("#modalEditGroup{{$row["id_creador"]}}").click(function(){
-                                                    // Swal.fire({
-                                                    //     icon: 'info',
-                                                    //     title: 'Cargando',
-                                                    //     showConfirmButton: false,
-                                                    // })
-                                                    $.ajax({
-                                                        type: "GET",
-                                                        url: "/modal_edit_group",
-                                                        data:{
-                                                            nombre:'{{$row["nombre"]}}',
-                                                            encargado:'{{$row["encargado"]}}',
-                                                            id_grupo:'{{$row["id_grupo"]}}'
-                                                        },
-                                                        success: function (data)
-                                                        {
-                                                            $("#modalContent").html(data);
-                                                            // Toast.fire({
-                                                            //     icon: 'success',
-                                                            //     title: 'Completado'
-                                                            // })
-                                                        }
-                                                    });
-                                                });
-                                            </script>
-                                        </td>
-                                        <td>
-                                            @if($row["id_creador"] != "INS")
-                                                <button class="btn btn-danger btn-sm" id="group_del">Eliminar</button></td>                          
-                                            @else
-                                                <button class="btn btn-danger btn-sm" disabled="" id="group_del">Eliminar</button></td>
-                                            @endif
-                                        </td>
+                                        @else
+                                            <td>
+                                                <button type="button" class="btn btn-primary" disabled="" data-toggle="modal" data-target=".bd-example-modal-xl">Editar</button>
+                                            </td>
+                                            <td>
+                                                <button class="btn btn-danger btn-sm" disabled="">Eliminar</button>
+                                            </td>
+                                        @endif
+                                        
                                     </tr>
                                 @endforeach
-                                <div class="modal fade bd-example-modal-xl" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+                                <div class="modal fade bd-example-modal-xl" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
                                     <div class="modal-dialog modal-xl" >
                                         <div class="modal-content" id="modalContent">
                                         </div>
