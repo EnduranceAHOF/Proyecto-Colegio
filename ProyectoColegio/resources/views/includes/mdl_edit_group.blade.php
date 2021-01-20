@@ -52,7 +52,7 @@
         </form>
         <div class="col-8">
         </div>
-        <div class="col-6">
+        <div class="col-12">
             <div class="card">
                 <div class="card-header" id="result">
                     Estudiantes
@@ -169,49 +169,6 @@
                         }
                     </script>
                 </div>
-            </div>
-        </div>
-        <div class="col-6">
-            <div class="card">
-            <div class="card-header">
-                Grupos
-            </div>
-            <div class="card-body">
-                <table class="table table-bordered" id="tableGroup">
-                <thead>
-                    <tr>
-                    <th scope="col">Nombre</th>
-                    <th scope="col">Agregar/Quitar</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach($list_groups as $row3)
-                        @php
-                            $flag = false;
-                        @endphp 
-                        @foreach($list_students_items_groups as $row4)
-                            @if($row4["tipo"] == "Grupo" && $row4["id_ref"] == $row3["id_grupo"] && $row3["nombre"] == $row4["nombre"])
-                                @php
-                                    $flag = true;
-                                @endphp  
-                            @endif
-                        @endforeach
-                        <tr>
-                            <th>
-                                {{$row3["nombre"]}}
-                            </th>
-                            <td>
-                                @if($flag)
-                                    <button class="btn btn-danger btn-sm">Quitar</button>
-                                @else
-                                    <button class="btn btn-success btn-sm">Agregar</button>
-                                @endif
-                            </td>
-                        </tr>
-                    @endforeach
-                </tbody>
-                </table>
-            </div>
             </div>
         </div>
     </div>

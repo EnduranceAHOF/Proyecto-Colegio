@@ -1,7 +1,7 @@
 <!DOCTYPE html> 
 @extends("layouts.mcdn")
 @section("title")
-Test Section
+Correos
 @endsection
 
 @section("headex")
@@ -30,11 +30,11 @@ const Toast = Swal.mixin({
 
 @section("context")
 <br>
-<h5 class="card-title">Correos</h5>
+<h5 class="card-title m-3" >Grupos</h5>
 <div class="row" style="margin:0;">
   <div class="col-3">
     <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
-      <a class="nav-link active" id="v-pills-select_group-tab" data-toggle="pill" href="#v-pills-select_group" role="tab" aria-controls="v-pills-select_group" aria-selected="true">Seleccionar Grupo</a>
+      <a class="nav-link active" id="v-pills-select_group-tab" data-toggle="pill" href="#v-pills-select_group" role="tab" aria-controls="v-pills-select_group" aria-selected="true">Ver y Editar Grupos</a>
       <a class="nav-link" id="v-pills-create_group-tab" data-toggle="pill" href="#v-pills-create_group" role="tab" aria-controls="v-pills-create_group" aria-selected="false">Crear Grupo</a>   
     </div>
   </div>
@@ -50,7 +50,6 @@ const Toast = Swal.mixin({
                                 <tr>
                                     <th scope="col">Nombre</th>
                                     <th scope="col">Encargado</th>
-                                    <th scope="col">Seleccionar</th>
                                     <th scope="col">Editar</th>
                                     <th scope="col">Eliminar</th>
                                 </tr>
@@ -65,8 +64,7 @@ const Toast = Swal.mixin({
                                                 {{$row["nombre"]}}
                                             @endif
                                         </td>
-                                        <td>{{$row["encargado"]}}</td>                                        
-                                        <td><button class="btn btn-primary btn-sm" >Seleccionar</button></td>
+                                        <td>{{$row["encargado"]}}</td>
                                         @if($row["dni_creador"] == Session::get('account')['dni'] || Session::get('account')['is_admin']=='YES')
                                             @if(Session::get('account')['is_admin']=='YES' && $row["id_creador"] == "INS")
                                                 <td>
@@ -106,7 +104,29 @@ const Toast = Swal.mixin({
                                                     </script>
                                                 </td>
                                                 <td>
-                                                    <a href="del_group?id={{$row["id_grupo"]}}&nombre={{$row["nombre"]}}" class="btn btn-danger btn-sm" >Eliminar</a>
+                                                    <a href="#" class="btn btn-danger btn-sm" onclick="confirmDelBtn({{$row["id_grupo"]}})" >Eliminar</a>
+                                                    <script>
+                                                        
+                                                        function confirmDelBtn(id_grupo_del){                                                            
+                                                            Swal.fire({
+                                                                title: 'Estas seguro?',
+                                                                icon: 'warning',
+                                                                showCancelButton: true,
+                                                                confirmButtonColor: '#3085d6',
+                                                                cancelButtonColor: '#d33',
+                                                                confirmButtonText: 'Si, eliminar!'
+                                                                }).then((result) => {
+                                                                if (result.isConfirmed) {
+                                                                    Swal.fire(
+                                                                    'Borrado!',
+                                                                    'El grupo se ha eliminado correctamente.',
+                                                                    'success',
+                                                                    window.location.href = "del_group?id="+id_grupo_del
+                                                                    )
+                                                                }
+                                                            })
+                                                        }
+                                                    </script>
                                                 </td>
                                             @endif
                                         @else
@@ -138,9 +158,12 @@ const Toast = Swal.mixin({
             <div class="card-body">      
                 <form  action="/create_group" method="GET">
                     <div class="form-row">
-                        <div class="form-group col-md-6">
+                        <div class="form-group col-md-8">
                             <input type="text" class="form-control" name="nombre_grupo" minlength="4" placeholder="Nombre de Grupo" id="nombre_grupo" required="">
-                            <button type="submit" class="btn btn-primary">Agregar</button>
+                        </div>
+                        <div class="form-group col-md-4">
+                            <label style="color:transparent;">.</label>
+                            <button type="submit" class="btn btn-success">Agregar</button>
                         </div>
                     </div>
                 </form>

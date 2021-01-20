@@ -47,7 +47,11 @@ class View_System extends Controller {
                     }
                 case "adm_students":
                     if($this->isAdmin()){
-                        $students = $this->students();
+                        $curso = 0;
+                        if(isset($gets['curso'])){
+                            $curso = $gets['curso'];
+                        }
+                        $students = $this->students($curso);
                         return view('adm_students')->with("students",$students)->with("message",$message);
                     }else{
                         return redirect('');
@@ -72,14 +76,10 @@ class View_System extends Controller {
                     $list_groups = $this->list_groups();
                     $list_students_groups = $this->list_students_groups();
                     return view('mails/groups')->with("list_groups",$list_groups)->with("list_students_groups",$list_students_groups)->with("message",$message);                    
-                case "mail_mails_sent":
-                    return view('mails/mails_sent');                    
+                case "mail_sent_and_tracing_mails":
+                    return view('mails/sent_and_tracing_mails');                    
                 case "mail_send_mail":
                     return view('mails/send_mail');                    
-                case "mail_template":
-                    return view('mails/template');
-                case "mail_tracing":
-                    return view('mails/tracing');
                 default:
                 return view('not_found')->with("path",$path);
             }
@@ -162,11 +162,12 @@ class View_System extends Controller {
         //dd($data);
         return $data;       
     }
-    private function students(){
+    private function students($id_curso){
         $arr = array(
             'institution' => getenv("APP_NAME"),
             'public_key' => getenv("APP_PUBLIC_KEY"),
-            'method' => 'list_students'
+            'method' => 'list_students',
+            'data' => [ "id_curso" => $id_curso ]
         );
         //dd($arr);
         $response = Http::withBody(json_encode($arr), 'application/json')->post("https://cloupping.com/api-ins");

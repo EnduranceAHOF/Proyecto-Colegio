@@ -120,23 +120,7 @@ class App_Controller extends Controller {
         else{
             return ('/');
         }
-    }    
-    public function del_course(Request $request){
-        if(Session::get('account')['is_admin']=='YES'){
-            $gets = $request->input();
-            $arr = array(
-                'institution' => getenv("APP_NAME"),
-                'public_key' => getenv("APP_PUBLIC_KEY"),
-                'method' => 'del_grade',
-                'data' => ['id' => $gets["id"]]
-            );
-            $response = Http::withBody(json_encode($arr), 'application/json')->post("https://cloupping.com/api-ins");
-            return back();
-        }
-        else{
-            return ('/');
-        }
-    }   
+    }
     public function add_student(Request $request){
         if(Session::get('account')['is_admin']=='YES'){
             $gets = $request->input();
@@ -300,7 +284,7 @@ class App_Controller extends Controller {
                 'institution' => getenv("APP_NAME"),
                 'public_key' => getenv("APP_PUBLIC_KEY"),
                 'method' => 'matriculate_student',
-                'data' => ['id' => $gets["id_stu"]]
+                'data' => ['id' => $gets["id_stu"], 'id_matricula' => $gets["id_matricula"] ]
             );
             //dd($arr);
             $response = Http::withBody(json_encode($arr), 'application/json')->post("https://cloupping.com/api-ins");
@@ -384,14 +368,14 @@ class App_Controller extends Controller {
     }
     public function del_group(Request $request){
         $gets = $request->input();
-        $id = Session::get('account')["dni"];
-        dd($gets);
+        $dni = Session::get('account')["dni"];
         $arr = array(
             'institution' => getenv("APP_NAME"),
             'public_key' => getenv("APP_PUBLIC_KEY"),
-            'method' => '',
-            'data' => ["id_creador" => $id, "nombre_grupo" => $gets["nombre_grupo"]]
+            'method' => 'del_list_mail_groups',
+            'data' => ["dni_creador" => $dni,"id_grupo" => $gets["id"]]
         );
+        //dd($arr);
         $response = Http::withBody(json_encode($arr), 'application/json')->post("https://cloupping.com/api-ins");
         $data = json_decode($response->body(), true); 
         //dd($data);
@@ -429,5 +413,48 @@ class App_Controller extends Controller {
         //dd($data);
         //return $gets["id_item"];
         return $response->status();
+    }
+    public function change_student_section(Request $request){
+        if(Session::get('account')['is_admin']=='YES'){
+            $gets = $request->input();
+            //dd($gets);
+            $dni_adm = Session::get('account')['dni'];
+            $arr = array(
+                'institution' => getenv("APP_NAME"),
+                'public_key' => getenv("APP_PUBLIC_KEY"),
+                'method' => 'matriculate_student_section',
+                'data' => ['dni_adm' => $dni_adm,'id_stu' =>$gets["id_stu"], 'section' => $gets["section"],'id_curso' => $gets["id_curso"], 'id_matricula' => $gets["id_matricula"] ]
+            );
+            //dd($arr);
+            $response = Http::withBody(json_encode($arr), 'application/json')->post("https://cloupping.com/api-ins");
+            $data = json_decode($response->body(), true); 
+            //dd($data);
+            return back();
+        }
+        else{
+            return ('/');
+        }
+    }
+    public function change_student_CP(Request $request){
+        if(Session::get('account')['is_admin']=='YES'){
+            $gets = $request->input();
+            //dd($gets);
+            $dni_adm = Session::get('account')['dni'];
+            // matriculate_student_parent_center
+            $arr = array(
+                'institution' => getenv("APP_NAME"),
+                'public_key' => getenv("APP_PUBLIC_KEY"),
+                'method' => 'matriculate_student_parent_center',
+                'data' => ['dni_adm' => $dni_adm,'id_stu' =>$gets["id_stu"],'id_curso' =>$gets["id_curso"], 'id_matricula' => $gets["id_matricula"], 'centro_padres' => $gets["inCp"] ]
+            );
+            //dd($arr);
+            $response = Http::withBody(json_encode($arr), 'application/json')->post("https://cloupping.com/api-ins");
+            $data = json_decode($response->body(), true); 
+            //dd($data);
+            //return back();
+        }
+        else{
+            return ('/');
+        }
     }
 }

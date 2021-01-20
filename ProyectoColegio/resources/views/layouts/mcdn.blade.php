@@ -77,11 +77,9 @@ if(Session::has('period')){
                     <li class="nav-item dropdown">
                         <a  class="nav-link dropdown-toggle" href="#" id="navbarDropdownCorreo" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Correos</a>
                         <div class="dropdown-menu" aria-labelledby="navbarDropdownCorreo">
-                            <a class="dropdown-item" href="mail_send_mail">Enviar Correo</a>
-                            <a class="dropdown-item" href="mail_mails_sent">Correos Enviados</a>
-                            <a class="dropdown-item" href="mail_tracing">Seguimiento</a>
-                            <a class="dropdown-item" href="mail_groups">Grupos</a>
-                            <a class="dropdown-item" href="mail_template">Plantillas</a>
+                            <a class="dropdown-item" href="/mail_send_mail">Enviar Correo</a>
+                            <a class="dropdown-item" href="/mail_sent_and_tracing_mails">Correos Enviados y Seguimiento</a>
+                            <a class="dropdown-item" href="/mail_groups">Grupos</a>
                         </div>
                     </li>
                     @if(Session::get('account')["is_admin"]=="YES")
@@ -90,12 +88,12 @@ if(Session::has('period')){
                             Administrar
                         </a>        
                         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                            <a class="dropdown-item" href="adm_periods">Periodos</a>
-                            <a class="dropdown-item" href="adm_users">Usuarios</a>
-                            <a class="dropdown-item {{$periodenable}}"  href="adm_courses">Cursos</a>
-                            <a class="dropdown-item {{$periodenable}}" href="adm_subject">Asignaturas</a>
-                            <a class="dropdown-item {{$periodenable}}" href="adm_teachers">Profesores</a>
-                            <a class="dropdown-item" href="adm_students">Estudiantes</a>
+                            <a class="dropdown-item" href="/adm_periods">Periodos</a>
+                            <a class="dropdown-item" href="/adm_users">Usuarios</a>
+                            <a class="dropdown-item {{$periodenable}}"  href="/adm_courses">Cursos</a>
+                            <a class="dropdown-item {{$periodenable}}" href="/adm_subject">Asignaturas</a>
+                            <a class="dropdown-item {{$periodenable}}" href="/adm_teachers">Profesores</a>
+                            <a class="dropdown-item" href="/adm_students">Estudiantes</a>
                         </div>
                     </li>
                     @endif

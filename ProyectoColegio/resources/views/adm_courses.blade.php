@@ -23,7 +23,7 @@ Administrar Estudiantes
         <button class="btn btn-success " type="button" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">Agregar Curso</button>
         <br>
         <div class="collapse mt-2" id="collapseExample">
-            <form class="row" id="formAdd" action="add_course" method="GET">
+            <form class="row" style="margin: 0px;" id="formAdd" action="add_course" method="GET">
                 <div class="input-group">
                     <br>
                     <div class="input-group-prepend ">
@@ -99,7 +99,6 @@ Administrar Estudiantes
                         <th scope="col">Curso</th>
                         <th scope="col">Sección</th>
                         <th scope="col">Docente</th>
-                        <th scope="col">#</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -115,9 +114,6 @@ Administrar Estudiantes
                                     <strong>{{$row["profesor"]}}</strong> 
                                 @endif 
                             </td>                                                    
-                            <td>
-                                <a href="/del_course?id={{$row["id"]}}" class="btn btn-danger ">Eliminar</a>
-                            </td>
                         </tr>               
                     @endforeach                      
                 </tbody>
