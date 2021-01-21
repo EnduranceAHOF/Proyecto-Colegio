@@ -9,7 +9,7 @@
         </div>
         <form class="col-4">
             <div class="form-group">
-                <input type="text" class="form-control ml-1" id="newName" name="new_name"  minlength="4">
+                <input type="text" class="form-control ml-1" value="{{$nombre}}" id="newName" name="new_name"  minlength="4">
                 <button type="button" class="btn btn-success btn-sm m-1" id="changeName">Cambiar nombre de grupo</button>
                 <script>
                     $("#changeName").click(function(){

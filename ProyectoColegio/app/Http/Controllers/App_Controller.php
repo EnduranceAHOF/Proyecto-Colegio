@@ -20,7 +20,7 @@ class App_Controller extends Controller {
         return redirect('/');
     }
     public function change_period(Request $request){
-        if(Session::get('account')['is_admin']=='YES'){
+        if($this->isAdmin()){
             $gets = $request->input();
             $arr = array(
                 'institution' => getenv("APP_NAME"),
@@ -35,7 +35,7 @@ class App_Controller extends Controller {
         }
     }
     public function add_new_period(Request $request){
-        if(Session::get('account')['is_admin']=='YES'){
+        if($this->isAdmin()){
             $gets = $request->input();
             $arr = array(
                 'institution' => getenv("APP_NAME"),
@@ -53,7 +53,7 @@ class App_Controller extends Controller {
         }
     }
     public function change_staff_status(Request $request){
-        if(Session::get('account')['is_admin']=='YES'){
+        if($this->isAdmin()){
             $gets = $request->input();
             $arr = array(
                 'institution' => getenv("APP_NAME"),
@@ -68,7 +68,7 @@ class App_Controller extends Controller {
         }
     }
     public function change_staff_admin(Request $request){
-        if(Session::get('account')['is_admin']=='YES'){
+        if($this->isAdmin()){
             $gets = $request->input();
             $arr = array(
                 'institution' => getenv("APP_NAME"),
@@ -89,7 +89,7 @@ class App_Controller extends Controller {
         }
     }
     public function add_user(Request $request){
-        if(Session::get('account')['is_admin']=='YES'){
+        if($this->isAdmin()){
             $gets = $request->input();
             $us = Session::get('account')['full_name'];
             $arr = array(
@@ -106,7 +106,7 @@ class App_Controller extends Controller {
         }
     }    
     public function add_course(Request $request){
-        if(Session::get('account')['is_admin']=='YES'){
+        if($this->isAdmin()){
             $gets = $request->input();
             $arr = array(
                 'institution' => getenv("APP_NAME"),
@@ -122,7 +122,7 @@ class App_Controller extends Controller {
         }
     }
     public function add_student(Request $request){
-        if(Session::get('account')['is_admin']=='YES'){
+        if($this->isAdmin()){
             $gets = $request->input();
             $arr = array(
                 'institution' => getenv("APP_NAME"),
@@ -150,7 +150,7 @@ class App_Controller extends Controller {
         }
     }    
     public function del_student(Request $request){
-        if(Session::get('account')['is_admin']=='YES'){
+        if($this->isAdmin()){
             $gets = $request->input();
             $arr = array(
                 'institution' => getenv("APP_NAME"),
@@ -189,7 +189,7 @@ class App_Controller extends Controller {
         return view("modals/modal_students")->with("stu",$data[0]);
     }
     public function edit_student(Request $request){
-        if(Session::get('account')['is_admin']=='YES'){
+        if($this->isAdmin()){
             $gets = $request->input();
             $arr = array(
                 'institution' => getenv("APP_NAME"),
@@ -218,7 +218,7 @@ class App_Controller extends Controller {
         }
     }
     public function add_subject(Request $request){
-        if(Session::get('account')['is_admin']=='YES'){
+        if($this->isAdmin()){
             $gets = $request->input();
             $arr = array(
                 'institution' => getenv("APP_NAME"),
@@ -240,7 +240,7 @@ class App_Controller extends Controller {
         }
     }  
     public function del_subject(Request $request){
-        if(Session::get('account')['is_admin']=='YES'){
+        if($this->isAdmin()){
             $gets = $request->input();
             $arr = array(
                 'institution' => getenv("APP_NAME"),
@@ -257,7 +257,7 @@ class App_Controller extends Controller {
         }
     }
     public function add_teacher(Request $request){
-        if(Session::get('account')['is_admin']=='YES'){
+        if($this->isAdmin()){
             $gets = $request->input();
             //dd($gets);
             $arr = array(
@@ -277,7 +277,7 @@ class App_Controller extends Controller {
         }
     }
     public function student_activate(Request $request){
-        if(Session::get('account')['is_admin']=='YES'){
+        if($this->isAdmin()){
             $gets = $request->input();
             //dd($gets);
             $arr = array(
@@ -297,7 +297,7 @@ class App_Controller extends Controller {
         }
     }
     public function set_jefatura(Request $request){
-        if(Session::get('account')['is_admin']=='YES'){
+        if($this->isAdmin()){
             $gets = $request->input();
             //dd($gets);
             $arr = array(
@@ -317,7 +317,7 @@ class App_Controller extends Controller {
         }
     }
     public function set_asignatura(Request $request){
-        if(Session::get('account')['is_admin']=='YES'){
+        if($this->isAdmin()){
             $gets = $request->input();
             //dd($gets);
             $arr = array(
@@ -415,7 +415,7 @@ class App_Controller extends Controller {
         return $response->status();
     }
     public function change_student_section(Request $request){
-        if(Session::get('account')['is_admin']=='YES'){
+        if($this->isAdmin()){
             $gets = $request->input();
             //dd($gets);
             $dni_adm = Session::get('account')['dni'];
@@ -436,7 +436,7 @@ class App_Controller extends Controller {
         }
     }
     public function change_student_CP(Request $request){
-        if(Session::get('account')['is_admin']=='YES'){
+        if($this->isAdmin()){
             $gets = $request->input();
             //dd($gets);
             $dni_adm = Session::get('account')['dni'];
@@ -454,7 +454,33 @@ class App_Controller extends Controller {
             //return back();
         }
         else{
-            return ('/');
+            return "Sin Permiso";
+        }
+    }
+    private function checkAdmin(){
+        if (Session::has('account')){
+            $arr = array(
+                'institution' => getenv("APP_NAME"),
+                'public_key' => getenv("APP_PUBLIC_KEY"),
+                'method' => 'check_is_admin',
+                'data' => ['dni' => Session::get('account')['dni']]);
+            $response = Http::withBody(json_encode($arr), 'application/json')->post("https://cloupping.com/api-ins");
+            $status = $response->json()['status'];
+            if($status == false){
+                return false;
+            }else{
+                return true;
+            }
+        }else{
+            return false;
+        }
+    }
+    private function isAdmin(){
+        $validate = $this->checkAdmin();
+        if(Session::get('account')['is_admin']=='YES' && $validate){
+            return true;
+        }else{
+            return false;
         }
     }
 }

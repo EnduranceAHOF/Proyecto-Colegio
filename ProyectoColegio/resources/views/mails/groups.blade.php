@@ -177,7 +177,7 @@ const Toast = Swal.mixin({
 <script>
         $(document).ready( function () {
             $('#createdGroups').DataTable({
-                    order: [],
+                    order: [1],
                     language: {
                         "decimal": "",
                         "emptyTable": "No hay información",

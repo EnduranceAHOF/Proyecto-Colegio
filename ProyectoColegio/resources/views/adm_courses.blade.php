@@ -22,7 +22,15 @@ Administrar Estudiantes
         <br>
         <button class="btn btn-success " type="button" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">Agregar Curso</button>
         <br>
-        <div class="collapse mt-2" id="collapseExample">
+        @php
+            $collapsed = "";
+        @endphp
+        @if(isset($_GET["add_course"]))
+            @php
+                $collapsed = "show";
+            @endphp
+        @endif
+        <div class="collapse {{$collapsed}} mt-2" id="collapseExample">
             <form class="row" style="margin: 0px;" id="formAdd" action="add_course" method="GET">
                 <div class="input-group">
                     <br>

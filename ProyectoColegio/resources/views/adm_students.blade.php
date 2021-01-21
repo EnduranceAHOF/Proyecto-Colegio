@@ -126,26 +126,36 @@ const Toast = Swal.mixin({
             </thead>
             <tbody>
                 @foreach($students as $row)
+                    @php
+                        $flag = false;
+                        $list_section = array();
+                    @endphp
+                    @foreach ($grades as $row2)
+                        @if ($row["id_curso"] == $row2["id_curso"])
+                            @php
+                                array_push($list_section,$row2["seccion"]);
+                                $flag = true;
+                            @endphp
+                        @endif
+                    @endforeach
                     <tr>
-                        <td>{{$row["nombre_stu"]}}</td>
+                        <td>{{$row["nombre_stu"]}} </td>
                         <td>{{$row["dni_stu"]}}</td>
-                        <td>{{$row["curso"]}} </td>
+                        <td>@if($flag) <span class="text-success">{{$row["curso"]}}</span> @else <span class="text-danger">{{$row["curso"]}}</span> @endif </td>
                         <td>
+                            @php
+                                $selec_en = 'disabled=""';
+                            @endphp
                             @if($row["matricula"] == "si")
-                                <select  value="{{$row["seccion"]}}" class="form-control" id="selectSection{{$row["id_stu"]}}" name="selectSection">
-                                    <option value="A">A</option>
-                                    <option value="B">B</option>
-                                    <option value="C">C</option>
-                                    <option value="D">D</option>
-                                </select>
-                            @else
-                                <select disabled="" value="{{$row["seccion"]}}" class="form-control" id="selectSection{{$row["id_stu"]}}" name="selectSection">
-                                    <option value="A">A</option>
-                                    <option value="B">B</option>
-                                    <option value="C">C</option>
-                                    <option value="D">D</option>
-                                </select>
-                            @endif                            
+                                @php
+                                    $selec_en = "";
+                                @endphp
+                            @endif
+                            <select {{$selec_en}} value="{{$row["seccion"]}}" class="form-control" id="selectSection{{$row["id_stu"]}}" name="selectSection">
+                                @foreach ($list_section as $item)
+                                    <option value="{{$item}}">{{$item}}</option>
+                                @endforeach
+                            </select>                     
                             <script>
                                 $(document).ready(function(){
                                     $("#selectSection{{$row["id_stu"]}} [value={{$row["seccion"]}}]").prop('selected',true);
@@ -211,13 +221,21 @@ const Toast = Swal.mixin({
                                                 },
                                                 success: function (data)
                                                 {
-                                                    $("#temp1").html(data);
+                                                    if(data == ""){
+                                                        Toast.fire({
+                                                            icon: 'success', 
+                                                            title: 'Completado'
+                                                        });
+                                                    }else{
+                                                        $("#inputCP{{$row["id_stu"]}}").removeClass('is-valid');
+                                                        $("#inputCP{{$row["id_stu"]}}").addClass('is-invalid');
+                                                        Toast.fire({
+                                                            icon: 'error', 
+                                                            title: data
+                                                        });
+                                                    }
                                                 }
                                             });
-                                            Toast.fire({
-                                                icon: 'success', 
-                                                title: 'Completado'
-                                            })
                                         }
                                         else{
                                             $("#inputCP{{$row["id_stu"]}}").removeClass('is-valid');
@@ -227,60 +245,64 @@ const Toast = Swal.mixin({
                                 });
                             </script>
                         <td>
-                            <div class="custom-control custom-switch">
-                                @if($row["matricula"] == "si")
-                                    <input type="checkbox" class="custom-control-input" id="customSwitch{{$row["id_stu"]}}" checked="">
-                                    <label class="custom-control-label text-success" for="customSwitch{{$row["id_stu"]}}" style="width:112px" id="labelMatricula{{$row["id_stu"]}}">Matriculado</label>
-                                @else
-                                    <input type="checkbox" class="custom-control-input" id="customSwitch{{$row["id_stu"]}}" >
-                                    <label class="custom-control-label text-danger" for="customSwitch{{$row["id_stu"]}}" style="width:112px" id="labelMatricula{{$row["id_stu"]}}">No Matriculado</label>
-                                @endif
-                            </div>
-                            <script>
-                                $("#customSwitch{{$row["id_stu"]}}").click(function (){
-                                    Swal.fire({
-                                        icon: 'info',
-                                        title: 'Cargando',
-                                        showConfirmButton: false,
-                                    })
-                                    $.ajax({
-                                        type: "GET",
-                                        url: "/student_activate",
-                                        data:{
-                                            id_stu: '{{$row["id_stu"]}}',
-                                            id_matricula: '{{$row["id_matricula"]}}'  
-                                        },
-                                        success: function (data)
-                                        {
-                                            $("#result").html(data);
-                                            if($("#customSwitch{{$row["id_stu"]}}").is(":checked")){                                       
-                                                $("#labelMatricula{{$row["id_stu"]}}").removeClass('text-danger');
-                                                $("#labelMatricula{{$row["id_stu"]}}").addClass('text-success');
-                                                $("#labelMatricula{{$row["id_stu"]}}").html('Matriculado');
-                                                $("#selectSection{{$row["id_stu"]}}").removeAttr('disabled');
-                                                $("#inputCP{{$row["id_stu"]}}").removeAttr('readonly');
-                                                var cantidad = parseInt($("#cantidadMat").html());
-                                                cantidad++;
-                                                $("#cantidadMat").html(cantidad)
+                            @if($flag)
+                                <div class="custom-control custom-switch">
+                                    @if($row["matricula"] == "si")
+                                        <input type="checkbox" class="custom-control-input" id="customSwitch{{$row["id_stu"]}}" checked="">
+                                        <label class="custom-control-label text-success" for="customSwitch{{$row["id_stu"]}}" style="width:112px" id="labelMatricula{{$row["id_stu"]}}">Matriculado</label>
+                                    @else
+                                        <input type="checkbox" class="custom-control-input" id="customSwitch{{$row["id_stu"]}}" >
+                                        <label class="custom-control-label text-danger" for="customSwitch{{$row["id_stu"]}}" style="width:112px" id="labelMatricula{{$row["id_stu"]}}">No Matriculado</label>
+                                    @endif
+                                </div>
+                                <script>
+                                    $("#customSwitch{{$row["id_stu"]}}").click(function (){
+                                        Swal.fire({
+                                            icon: 'info',
+                                            title: 'Cargando',
+                                            showConfirmButton: false,
+                                        })
+                                        $.ajax({
+                                            type: "GET",
+                                            url: "/student_activate",
+                                            data:{
+                                                id_stu: '{{$row["id_stu"]}}',
+                                                id_matricula: '{{$row["id_matricula"]}}'  
+                                            },
+                                            success: function (data)
+                                            {
+                                                $("#result").html(data);
+                                                if($("#customSwitch{{$row["id_stu"]}}").is(":checked")){                                       
+                                                    $("#labelMatricula{{$row["id_stu"]}}").removeClass('text-danger');
+                                                    $("#labelMatricula{{$row["id_stu"]}}").addClass('text-success');
+                                                    $("#labelMatricula{{$row["id_stu"]}}").html('Matriculado');
+                                                    $("#selectSection{{$row["id_stu"]}}").removeAttr('disabled');
+                                                    $("#inputCP{{$row["id_stu"]}}").removeAttr('readonly');
+                                                    var cantidad = parseInt($("#cantidadMat").html());
+                                                    cantidad++;
+                                                    $("#cantidadMat").html(cantidad)
+                                                }
+                                                else{                                       
+                                                    $("#labelMatricula{{$row["id_stu"]}}").removeClass('text-succes');
+                                                    $("#labelMatricula{{$row["id_stu"]}}").addClass('text-danger');
+                                                    $("#labelMatricula{{$row["id_stu"]}}").html('No Matriculado');
+                                                    $("#selectSection{{$row["id_stu"]}}").attr('disabled',true);
+                                                    $("#inputCP{{$row["id_stu"]}}").attr('readonly',true);                                        
+                                                    var cantidad = parseInt($("#cantidadMat").html());
+                                                    cantidad--;
+                                                    $("#cantidadMat").html(cantidad)
+                                                }
+                                                Toast.fire({
+                                                    icon: 'success', 
+                                                    title: 'Completado'
+                                                })
                                             }
-                                            else{                                       
-                                                $("#labelMatricula{{$row["id_stu"]}}").removeClass('text-succes');
-                                                $("#labelMatricula{{$row["id_stu"]}}").addClass('text-danger');
-                                                $("#labelMatricula{{$row["id_stu"]}}").html('No Matriculado');
-                                                $("#selectSection{{$row["id_stu"]}}").attr('disabled',true);
-                                                $("#inputCP{{$row["id_stu"]}}").attr('readonly',true);                                        
-                                                var cantidad = parseInt($("#cantidadMat").html());
-                                                cantidad--;
-                                                $("#cantidadMat").html(cantidad)
-                                            }
-                                            Toast.fire({
-                                                icon: 'success', 
-                                                title: 'Completado'
-                                            })
-                                        }
+                                        });
                                     });
-                                });
-                            </script>
+                                </script>
+                            @else
+                                <a href="/adm_courses?add_course" class="badge badge-primary">Agregar curso</a>
+                            @endif
                         </td>
                     </tr>             
                 @endforeach                      

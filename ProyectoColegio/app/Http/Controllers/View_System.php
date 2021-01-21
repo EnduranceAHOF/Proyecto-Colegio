@@ -52,7 +52,8 @@ class View_System extends Controller {
                             $curso = $gets['curso'];
                         }
                         $students = $this->students($curso);
-                        return view('adm_students')->with("students",$students)->with("message",$message);
+						$grades = $this->grades();
+                        return view('adm_students')->with("students",$students)->with("grades",$grades)->with("message",$message);
                     }else{
                         return redirect('');
                     }
@@ -79,7 +80,8 @@ class View_System extends Controller {
                 case "mail_sent_and_tracing_mails":
                     return view('mails/sent_and_tracing_mails');                    
                 case "mail_send_mail":
-                    return view('mails/send_mail');                    
+                    $list_to = $this->list_to();
+                    return view('mails/send_mail')->with("lista_para",$list_to);                    
                 default:
                 return view('not_found')->with("path",$path);
             }
@@ -103,10 +105,29 @@ class View_System extends Controller {
             }
         }else{
             return false;
-        }      
+        }
+    }
+    private function checkAdmin(){
+        if (Session::has('account')){
+            $arr = array(
+                'institution' => getenv("APP_NAME"),
+                'public_key' => getenv("APP_PUBLIC_KEY"),
+                'method' => 'check_is_admin',
+                'data' => ['dni' => Session::get('account')['dni']]);
+            $response = Http::withBody(json_encode($arr), 'application/json')->post("https://cloupping.com/api-ins");
+            $status = $response->json()['status'];
+            if($status == false){
+                return false;
+            }else{
+                return true;
+            }
+        }else{
+            return false;
+        }
     }
     private function isAdmin(){
-        if(Session::get('account')['is_admin']=='YES'){
+        $validate = $this->checkAdmin();
+        if(Session::get('account')['is_admin']=='YES' && $validate){
             return true;
         }else{
             return false;
@@ -228,8 +249,19 @@ class View_System extends Controller {
         //dd($data);
         return $data;
     }
+    private function list_to(){
+        $arr = array(
+            'institution' => getenv("APP_NAME"),
+            'public_key' => getenv("APP_PUBLIC_KEY"),
+            'method' => 'list_mail_to'
+        );
+        //dd($arr);
+        $response = Http::withBody(json_encode($arr), 'application/json')->post("https://cloupping.com/api-ins");
+        $data = json_decode($response->body(), true);
+        //dd($data);
+        return $data;  
+    }
     private function list_groups(){
-        
         $arr = array(
             'institution' => getenv("APP_NAME"),
             'public_key' => getenv("APP_PUBLIC_KEY"),
