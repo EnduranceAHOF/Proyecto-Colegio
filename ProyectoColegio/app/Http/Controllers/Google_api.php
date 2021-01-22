@@ -15,7 +15,7 @@ class Google_api extends Controller {
             return redirect('home');
         } else {
             $scope = 'https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile';
-            $redirect_uri = "http://" . getenv("APP_URL") . '/g-response';
+            $redirect_uri = "https://" . getenv("APP_URL") . 'g-response';
             $auth_url = "https://accounts.google.com/o/oauth2/v2/auth";
             $auth_url .= "?";
             $auth_url .= "scope=$scope&";
@@ -37,7 +37,7 @@ class Google_api extends Controller {
             'code' => $code,
             'client_id' => getenv("GOOGLE_OAUTH_PUBLIC"),
             'client_secret' => getenv("GOOGLE_OAUTH_SECRET"),
-            'redirect_uri' => "http://" . getenv("APP_URL") . '/g-response',
+            'redirect_uri' => "https://" . getenv("APP_URL") . 'g-response',
             'grant_type' => 'authorization_code',
         );
 
